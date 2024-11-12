@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SCALE Individual Program Report</title>
+    <title>Scale Individual Program Report</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -14,92 +14,80 @@
         }
         table, th, td {
             border: 1px solid black;
-        }
-        th, td {
             padding: 8px;
             text-align: left;
         }
-        .signature-section {
-            margin-top: 20px;
+        .header, .footer {
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 10px;
         }
-        .signature-section div {
-            display: inline-block;
-            width: 30%;
+        .input-field {
+            width: 100%;
+            padding: 5px;
+            box-sizing: border-box;
         }
     </style>
 </head>
 <body>
-
-    <h2>PHILIPPINE SCIENCE HIGH SCHOOL SYSTEM</h2>
-    <h3>CAMPUS: _____________________________</h3>
-    <h3>SCALE INDIVIDUAL PROGRAM REPORT</h3>
-
-    <form action="process_form.php" method="POST">
-        <label for="student_name">Name of Student:</label>
-        <input type="text" id="student_name" name="student_name"><br><br>
-
-        <label for="adviser_name">Name of Adviser:</label>
-        <input type="text" id="adviser_name" name="adviser_name"><br><br>
-
-        <label for="batch">Batch:</label>
-        <input type="text" id="batch" name="batch"><br><br>
-
-        <table>
-            <thead>
-                <tr>
-                    <th>Title of Activity</th>
-                    <th>Strands</th>
-                    <th>Learning Outcomes</th>
-                    <th>Type (I/G)</th>
-                    <th>Date of Completion</th>
-                    <th>Submitted Evidence</th>
-                    <th>Remarks</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td><input type="text" name="activity_title_1"></td>
-                    <td><input type="text" name="strands_1"></td>
-                    <td><input type="text" name="learning_outcomes_1"></td>
-                    <td><input type="text" name="type_1"></td>
-                    <td><input type="date" name="completion_date_1"></td>
-                    <td>
-                        <select name="evidence_1">
-                            <option value="N">Narrative Reports (N)</option>
-                            <option value="P/V">Photo/Video Documentation (P/V)</option>
-                            <option value="R">Reflection Paper (R)</option>
-                            <option value="C">Certification (C)</option>
-                            <option value="others">Others</option>
-                        </select>
-                    </td>
-                    <td><input type="text" name="remarks_1"></td>
-                </tr>
-                <!-- You can add more rows as needed -->
-            </tbody>
-        </table>
-
-        <div class="signature-section">
-            <div>
-                <label for="student_signature">Signature of Student:</label><br>
-                <input type="text" id="student_signature" name="student_signature"><br><br>
+    <div class="landscape">
+        <div class="form-container">
+            <div class="header">
+                PHILIPPINE SCIENCE HIGH SCHOOL SYSTEM<br>
+                SCALE INDIVIDUAL PROGRAM REPORT
             </div>
-            <div>
-                <label for="date_prepared">Date Prepared:</label><br>
-                <input type="date" id="date_prepared" name="date_prepared"><br><br>
-            </div>
-            <div>
-                <label for="adviser_signature">Signature of Adviser:</label><br>
-                <input type="text" id="adviser_signature" name="adviser_signature"><br><br>
-            </div>
-            <div>
-                <label for="date_approved">Date Approved:</label><br>
-                <input type="date" id="date_approved" name="date_approved"><br><br>
-            </div>
+
+            <form>
+                <label for="campus">Campus:</label>
+                <input type="text" id="campus" class="input-field"><br><br>
+
+                <label for="studentName">Name of Student:</label>
+                <input type="text" id="studentName" class="input-field"><br><br>
+
+                <label for="batch">Batch:</label>
+                <input type="text" id="batch" class="input-field"><br><br>
+
+                <label for="adviserName">Name of Adviser:</label>
+                <input type="text" id="adviserName" class="input-field"><br><br>
+
+                <label for="strandsType">Strands Type (I = Individual, G = Group):</label>
+                <input type="text" id="strandsType" class="input-field"><br><br>
+
+                <label for="evidence">Attached Evidence:</label>
+                <input type="text" id="evidence" placeholder="Narrative Reports (N), Reflection Paper (R), Photo/Video (P/V), Certification (C), Others" class="input-field"><br><br>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Title of Activity</th>
+                            <th>Learning Outcomes</th>
+                            <th>Date of Completion</th>
+                            <th>Submitted Evidence</th>
+                            <th>Remarks</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><input type="text" class="input-field"></td>
+                            <td><input type="text" class="input-field"></td>
+                            <td><input type="date" class="input-field"></td>
+                            <td><input type="text" class="input-field"></td>
+                            <td><input type="text" class="input-field"></td>
+                        </tr>
+                        <!-- Add more rows as needed -->
+                    </tbody>
+                </table>
+
+                <br><br>
+                <div class="footer">
+                    <label for="studentSignature">Signature of Student:</label>
+                    <input type="text" id="studentSignature" class="input-field"><br><br>
+
+                    <label for="adviserSignature">Signature of Adviser:</label>
+                    <input type="text" id="adviserSignature" class="input-field"><br><br>
+                </div>
+            </form>
         </div>
-
-        <input type="submit" value="Submit">
-
-    </form>
-
+    </div>
 </body>
 </html>
