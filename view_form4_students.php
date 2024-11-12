@@ -7,6 +7,22 @@
     <style>
         body {
             font-family: Arial, sans-serif;
+			transform: rotate(90deg);
+        }
+        .landscape {
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transform: rotate(-90deg);
+            transform-origin: center;
+        }
+        .form-container {
+            width: 80vw;
+            padding: 20px;
+            border: 1px solid #000;
+            background-color: #f9f9f9;
         }
         table {
             width: 100%;
