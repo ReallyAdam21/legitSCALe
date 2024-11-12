@@ -159,7 +159,7 @@ if ($result->num_rows > 0) {
 ?>		
 
 		<tr>
-			<td><a href="view_students.php"><input type="button" value="BACK"></a></td>
+			<td><a href="dashboard.php"><input type="button" value="BACK"></a></td>
 		</tr>
 	</table>
 
