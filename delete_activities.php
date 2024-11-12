@@ -78,10 +78,10 @@ $resultActivity = $conn->query($sqlActivity);
             <tr>
                 <td>STRAND:</td>
                 <td>
-                    <p><input type="checkbox" name="cbService" class="profileStyle" <?php echo $row["a_strand_s"]=="1"? 'checked':''?>>SERVICE</p>
-					<p><input type="checkbox" name="cbCreativity" class="profileStyle" <?php echo $row["a_strand_c"]=="1"? 'checked':''?>>CREATIVITY</p>
-					<p><input type="checkbox" name="cbAction" class="profileStyle" <?php echo $row["a_strand_a"]=="1"? 'checked':''?>>ACTION</p>
-					<p><input type="checkbox" name="cbLeadership" class="profileStyle" <?php echo $row["a_strand_l"]=="1"? 'checked':''?>>LEADERSHIP</p>
+                    <p><input type="checkbox" name="cbService" disabled class="profileStyle" <?php echo $row["a_strand_s"]=="1"? 'checked':''?>>SERVICE</p>
+					<p><input type="checkbox" name="cbCreativity" disabled class="profileStyle" <?php echo $row["a_strand_c"]=="1"? 'checked':''?>>CREATIVITY</p>
+					<p><input type="checkbox" name="cbAction" disabled class="profileStyle" <?php echo $row["a_strand_a"]=="1"? 'checked':''?>>ACTION</p>
+					<p><input type="checkbox" name="cbLeadership" disabled class="profileStyle" <?php echo $row["a_strand_l"]=="1"? 'checked':''?>>LEADERSHIP</p>
                 </td>
             </tr>
             <tr>

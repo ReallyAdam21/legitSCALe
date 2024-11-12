@@ -4,6 +4,20 @@ include 'connect.php';
 
 $id = $_SESSION['id'];
 
+
+function getActivityCount($conn, $id) {
+    $sqlCountActivities = "SELECT COUNT(a_id) as activity_count FROM activities_tbl WHERE u_id = '$id'";
+    $resultCount = $conn->query($sqlCountActivities);
+
+    if ($resultCount->num_rows > 0) {
+        $rowCount = $resultCount->fetch_assoc();
+        return $rowCount['activity_count'];
+    }
+    return 0;
+}
+// Count the number of activities the student already has
+$activityCount = getActivityCount($conn, $id);
+
 // Fetch activities for the current user
 $sqlActivities = "SELECT * FROM activities_tbl WHERE u_id = '$id'";
 $resultActivities = $conn->query($sqlActivities);
@@ -136,16 +150,18 @@ $resultRemarks = $conn->query($remarks);
                     <td><?php echo htmlspecialchars($row["a_end"]); ?></td>
                     <td><a href ="delete_activities.php?a_id=<?php echo htmlspecialchars($row["a_id"]); ?>">Delete</a></td>
 					
-                </tr>
             <?php
                 }
             } else {
                 echo "<tr><td colspan='7'>0 results</td></tr>";
             }
             ?>
-            <tr>
-                <td colspan="7"><a href="insert_form2.php"><input type="button" value="ADD"></a></td>
-            </tr>
+            <!-- Display "Add" button if activity count is less than 5 -->
+            <?php if ($activityCount < 5) { ?>
+                <tr>
+                    <td colspan="8"><a href="insert_form2.php"><input type="button" value="ADD"></a></td>
+                </tr>
+            <?php } ?>
         </table>
 		
 		 <?php
