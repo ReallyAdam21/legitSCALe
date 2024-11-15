@@ -249,6 +249,7 @@ return $dropdown;
         .add-button { margin-top: 10px; display: block; }
     </style>
 </head>
+<?php include 'links.php'; ?>
 <body>
     <form action="view_form3_students.php?id=<?php echo $query_string_id; ?>" method="post" id="activityForm">
         <header>
@@ -283,17 +284,17 @@ return $dropdown;
             <tr>
                 <th>Type of Activity:</th>
                 <td>
-                   <label> <input type="radio" name="activity_type" value="I" <?php echo ($activity_type == 'I') ? 'checked': '';?>> Individual</label>
-                    <label><input type="radio" name="activity_type" value="G"<?php echo ($activity_type == 'G') ? 'checked': '';?>> Group</label>
+                   <label> <input disabled type="radio" name="activity_type" value="I" <?php echo ($activity_type == 'I') ? 'checked': '';?>> Individual</label>
+                    <label><input disabled type="radio" name="activity_type" value="G"<?php echo ($activity_type == 'G') ? 'checked': '';?>> Group</label>
                 </td>
             </tr>
             <tr>
                 <th>Strand:</th>
                 <td>
-                   <label> <input type="checkbox" name="a_service" value="1" <?php echo ($a_service !=0) ? 'checked': '';?>>  Service</label>
-                    <label> <input type="checkbox" name="a_creativity" value="1" <?php echo ($a_creativity !=0) ? 'checked': '';?>> Creativity </label>
-                     <label><input type="checkbox" name="a_action" value="1" <?php echo ($a_action !=0) ? 'checked': '';?>> Action </label>
-                     <label><input type="checkbox" name="a_leadership" value="1"  <?php echo ($a_leadership !=0) ? 'checked': '';?>> Leadership </label>
+                   <label> <input disabled type="checkbox" name="a_service" value="1" <?php echo ($a_service !=0) ? 'checked': '';?>>  Service</label>
+                    <label> <input disabled type="checkbox" name="a_creativity" value="1" <?php echo ($a_creativity !=0) ? 'checked': '';?>> Creativity </label>
+                     <label><input disabled type="checkbox" name="a_action" value="1" <?php echo ($a_action !=0) ? 'checked': '';?>> Action </label>
+                     <label><input disabled type="checkbox" name="a_leadership" value="1"  <?php echo ($a_leadership !=0) ? 'checked': '';?>> Leadership </label>
                 </td>
             </tr>
         </table>
@@ -354,7 +355,7 @@ return $dropdown;
 				</th>
 			</tr>	
 			<tr>
-				<td style="vertical-align:top;"  rowspan='4' height="125"><?php echo $a_description ?> </td>
+				<td disabled style="vertical-align:top;"  rowspan='4' height="125"><?php echo $a_description ?> </td>
 			</tr>
 		</table>	
 
