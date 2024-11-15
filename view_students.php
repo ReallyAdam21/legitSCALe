@@ -110,6 +110,7 @@ if (!empty($sql)) {
                                 <td><?php echo $row["u_lname"] . " " . $row["u_fname"] . " " . $row["u_mname"] ?></td>
                                 <td><a href="update_user.php?id=<?php echo $row["u_id"] ?>" class="action-link">Form 1</a></td>
                                 <td><a href="view_form2_scad.php?u_id=<?php echo $row["u_id"] ?>" class="action-link">Form 2</a></td>
+								<td><a href="view_form3_scad.php?u_id=<?php echo $row["u_id"] ?>" class="action-link">Form 3</a></td>
                             </tr>
                     <?php
                         }

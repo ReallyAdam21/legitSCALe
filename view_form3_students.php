@@ -26,11 +26,7 @@ $sqlRemarks = "SELECT a_sa_remarks, a_status FROM activities_tbl WHERE u_id = '$
 $resultRemarks = $conn->query($sqlRemarks);
 $remarks = '';
 $status = '';
-if ($resultRemarks->num_rows > 0) {
-    $rowRemarks = $resultRemarks->fetch_assoc();
-    $remarks = htmlspecialchars($rowRemarks['a_sa_remarks']);
-    $status = $rowRemarks['a_status'];
-}
+
 $sqlActivityDetails = "SELECT a_type, a_strand_s, a_strand_c, a_strand_a, a_strand_l, a_description, a_title 
                        FROM activities_tbl WHERE a_id = 'a_id'";
 $resultActivityDetails = $conn->query($sqlActivityDetails);
@@ -69,17 +65,21 @@ $implementation_start =isset($_POST['implementation_start']) ? $_POST['implement
 $implementation_end =isset($_POST['implementation_end']) ? $_POST['implementation_end'] : '';
 $objectives = isset($_POST['txtObjectives']) ? $_POST['txtObjectives'] : '';
 
-
+$isSubmit= isset($_POST['btnSubmit']) ? $_POST['btnSubmit'] : '';
 if ($_SERVER['REQUEST_METHOD']=='POST'){
 	//check if the required fields are filled
+
 	if($activityID){
+		if($isSubmit){
+		
+		
 		$query ="SELECT * FROM individual_activity_tbl WHERE u_id =? AND a_id = ?";
 		$stmt =$conn->prepare($query);
 		$stmt->bind_param('ii', $query_string_id, $activityID );
 		$stmt->execute();
 		$result = $stmt->get_result();
 		$details= $result->fetch_assoc();
-		
+		/*
 		if ($details){
 			$outcome1 = $details['a_outcome_1'];
 			$outcome2 = $details['a_outcome_2'];
@@ -95,33 +95,60 @@ if ($_SERVER['REQUEST_METHOD']=='POST'){
 			$implementation_start = $details['a_implement_date_start'];
 			$implementation_end = $details['a_implement_date_end'];
 			$objectives = $details['a_objectives'];
-		}
-		if($result->num_rows >0){
-			$update_query = "UPDATE individual_activity_tbl set
-			a_venue =?, a_objectives=?, a_plan_date_start=?, a_plan_date_end=?, a_implement_date_start=?, a_implement_date_end=?,a_outcome_1=?,  a_outcome_2=?, a_outcome_3=?, a_outcome_4=?, a_outcome_5=?, a_outcome_6=?, a_outcome_7=?, a_outcome_8=? WHERE u_id =? AND a_id =?";
-			
-			$stmt_update=$conn->prepare($update_query);
-			$stmt_update->bind_param('ssssssiiiiiiiiii', $venue, $objectives, $planning_start, $planning_end, $implementation_start, $implementation_end, $outcome1, $outcome2, $outcome3, $outcome4, $outcome5,$outcome6, $outcome7, $outcome8, $query_string_id, $activityID);
-			
-			if ($stmt_update->execute()){
-				$message = "Record has been updated successfully";
+		}*/
+			if($result->num_rows >0){
+				$update_query = "UPDATE individual_activity_tbl set
+				a_venue =?, a_objectives=?, a_plan_date_start=?, a_plan_date_end=?, a_implement_date_start=?, a_implement_date_end=?,a_outcome_1=?,  a_outcome_2=?, a_outcome_3=?, a_outcome_4=?, a_outcome_5=?, a_outcome_6=?, a_outcome_7=?, a_outcome_8=? WHERE u_id =? AND a_id =?";
+				
+				
+				$stmt_update=$conn->prepare($update_query);
+				$stmt_update->bind_param('ssssssiiiiiiiiii', $venue, $objectives, $planning_start, $planning_end, $implementation_start, $implementation_end, $outcome1, $outcome2, $outcome3, $outcome4, $outcome5,$outcome6, $outcome7, $outcome8, $query_string_id, $activityID);
+				
+				if ($stmt_update->execute()){
+					$message = "Record has been updated successfully";
+				}else{
+					$message = "Error updating record: " .$stmt_update->error;
+				}
 			}else{
-				$message = "Error updating record: " .$stmt_update->error;
+				
+				$query = "INSERT INTO individual_activity_tbl ( u_id, a_id, a_objectives, a_plan_date_start, a_plan_date_end, a_implement_date_start, a_implement_date_end, a_outcome_1, a_outcome_2, a_outcome_3, a_outcome_4, a_outcome_5, a_outcome_6, a_outcome_7, a_outcome_8, a_venue)
+					  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)";
+					  
+			
+				$stmt =$conn->prepare($query);
+				$stmt->bind_param('iisssssiiiiiiiis',  $query_string_id, $activityID, $objectives, $planning_start, $planning_end, $implementation_start, $implementation_end, $outcome1, $outcome2, $outcome3, $outcome4, $outcome5, $outcome6, $outcome7, $outcome8, $venue);
+			
+				if ($stmt->execute()){
+					$message = "Data has been saved successfully";
+				}
+				else{
+					$message = "Error saving data: " .$stmt->error;
+				
+				}
 			}
 		}else{
-			
-			$query = "INSERT INTO individual_activity_tbl ( u_id, a_id, a_objectives, a_plan_date_start, a_plan_date_end, a_implement_date_start, a_implement_date_end, a_outcome_1, a_outcome_2, a_outcome_3, a_outcome_4, a_outcome_5, a_outcome_6, a_outcome_7, a_outcome_8, a_venue)
-				  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)";
-				  
+			$query ="SELECT * FROM individual_activity_tbl WHERE u_id =? AND a_id = ?";
+		$stmt =$conn->prepare($query);
+		$stmt->bind_param('ii', $query_string_id, $activityID );
+		$stmt->execute();
+		$result = $stmt->get_result();
+		$details= $result->fetch_assoc();
 		
-			$stmt =$conn->prepare($query);
-			$stmt->bind_param('iisssssiiiiiiiis',  $query_string_id, $activityID, $objectives, $planning_start, $planning_end, $implementation_start, $implementation_end, $outcome1, $outcome2, $outcome3, $outcome4, $outcome5, $outcome6, $outcome7, $outcome8, $venue);
-		
-			if ($stmt->execute()){
-				$message = "Data has been saved successfully";
-			}
-			else{
-				$message = "Error saving data: " .$stmt->error;
+			if ($details){
+				$outcome1 = $details['a_outcome_1'];
+				$outcome2 = $details['a_outcome_2'];
+				$outcome3 = $details['a_outcome_3'];
+				$outcome4 = $details['a_outcome_4'];
+				$outcome5 = $details['a_outcome_5'];
+				$outcome6 = $details['a_outcome_6'];
+				$outcome7 = $details['a_outcome_7'];
+				$outcome8 = $details['a_outcome_8'];
+				$venue = $details['a_venue'];
+				$planning_start = $details['a_plan_date_start'];
+				$planning_end = $details['a_plan_date_end'];
+				$implementation_start = $details['a_implement_date_start'];
+				$implementation_end = $details['a_implement_date_end'];
+				$objectives = $details['a_objectives'];
 			}
 		}
 	}else{
@@ -305,15 +332,15 @@ return $dropdown;
         <table>
             <tr>
                 <th>Planning Dates (Start-End):</th>
-                <td><input required type="date" name="planning_start" id="planning_start" value="<?php echo htmlspecialchars($planning_start);?>" /> to <input  required type="date" name="planning_end" id="planning_end" value="<?php echo htmlspecialchars($planning_end);?>" /></td>
+                <td><input  type="date" name="planning_start" id="planning_start" value="<?php echo htmlspecialchars($planning_start);?>" /> to <input   type="date" name="planning_end" id="planning_end" value="<?php echo htmlspecialchars($planning_end);?>" /></td>
             </tr>
             <tr>
                 <th>Implementation Dates (Start-End):</th>
-                <td><input required type="date" name="implementation_start" id="implementation_start" value="<?php echo htmlspecialchars($implementation_start);?>" /> to <input required type="date" name="implementation_end" id="implementation_end" value="<?php echo htmlspecialchars($implementation_end);?>" /></td>
+                <td><input  type="date" name="implementation_start" id="implementation_start" value="<?php echo htmlspecialchars($implementation_start);?>" /> to <input  type="date" name="implementation_end" id="implementation_end" value="<?php echo htmlspecialchars($implementation_end);?>" /></td>
             </tr>
             <tr>
                 <th>Venue:</th>
-                <td><input required style ="width:420px" type="text" name="txtVenue" id="txtVenue" value="<?php echo htmlspecialchars($venue);?>" /></td>
+                <td><input  style ="width:420px" type="text" name="txtVenue" id="txtVenue" value="<?php echo htmlspecialchars($venue);?>" /></td>
             </tr>
         </table>
 		
@@ -327,7 +354,7 @@ return $dropdown;
 				</th>
 			</tr>	
 			<tr>
-				<td style="vertical-align:top;" rowspan='4' height="125"><?php echo $a_description ?> </td>
+				<td style="vertical-align:top;"  rowspan='4' height="125"><?php echo $a_description ?> </td>
 			</tr>
 		</table>	
 
@@ -341,8 +368,8 @@ return $dropdown;
 				</th>
 			</tr>	
 			<tr>
-				<td style="vertical-align:top;" rowspan='4' height="125"> 
-			<textarea required style="width:99%; height:99%;" name ="txtObjectives" id="txtObjectives" rows="4"><?php echo htmlspecialchars($objectives);?></textarea>
+				<td  style="vertical-align:top;" rowspan='4' height="125"> 
+			<textarea  style="width:99%; height:99%;" name ="txtObjectives" id="txtObjectives" rows="4"><?php echo htmlspecialchars($objectives);?></textarea>
 				</td>
 			
 			</tr>
@@ -457,7 +484,7 @@ return $dropdown;
 
   
         <div class="action-buttons">
-            <button type="submit">Submit</button>
+            <button type="submit" id="btnSubmit" name= "btnSubmit" value="submit">Submit</button>
         </div>
     </form>
 </body>
