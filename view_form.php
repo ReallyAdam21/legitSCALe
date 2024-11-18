@@ -52,6 +52,26 @@ function getForm3Link($userLevel, $userId) {
         return "#"; // Handle other cases or errors
     }
 }
+
+function getForm4Link($userLevel, $userId) {
+    if ($userLevel == 3) {
+        return "view_form4_students.php?id=$userId";
+    } elseif ($userLevel == 2) {
+        return "view_form4_scad.php?id=$userId";
+    } else {
+        return "#"; // Handle other cases or errors
+    }
+}
+
+function getForm5Link($userLevel, $userId) {
+    if ($userLevel == 3) {
+        return "view_form5_students.php?id=$userId";
+    } elseif ($userLevel == 2) {
+        return "view_form5_scad.php?id=$userId";
+    } else {
+        return "#"; // Handle other cases or errors
+    }
+}
 // Fetch users based on current user's section and position, including the same u_id
 $sqlUsers = "SELECT users_tbl.u_id, users_tbl.u_lname, users_tbl.u_fname, users_tbl.u_mname, users_tbl.u_level, users_info_tbl.ui_batch, users_info_tbl.ui_grade, users_info_tbl.ui_section, users_info_tbl.ui_position 
              FROM users_tbl 
@@ -132,6 +152,8 @@ $resultUsers = $conn->query($sqlUsers);
             <th>&nbsp;</th>
             <th>&nbsp;</th>
             <th>&nbsp;</th>
+			<th>&nbsp;</th>
+			<th>&nbsp;</th>
         </tr>
         <?php
         if ($resultUsers && $resultUsers->num_rows > 0) {
@@ -143,6 +165,8 @@ $resultUsers = $conn->query($sqlUsers);
                     <td><a href="<?php echo getForm1Link($rowUser['u_level'], $rowUser['u_id']); ?>">FORM1</a></td>
                     <td><a href="<?php echo getForm2Link($rowUser['u_level'], $rowUser['u_id']); ?>">FORM2</a></td>
                     <td><a href="<?php echo getForm3Link($rowUser['u_level'], $rowUser['u_id']); ?>">FORM3</a></td>
+                    <td><a href="<?php echo getForm4Link($rowUser['u_level'], $rowUser['u_id']); ?>">FORM4</a></td>
+					<td><a href="<?php echo getForm5Link($rowUser['u_level'], $rowUser['u_id']); ?>">FORM5</a></td>
                 </tr>
                 <?php
             }
