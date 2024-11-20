@@ -131,6 +131,19 @@
             background-color: #45a049;
         }
     </style>
+<?php
+session_start();
+include 'connect.php';
+
+// Check if the necessary session variables are set
+$id = $_SESSION['id'] ?? null;
+$lname = $_SESSION['lname'] ?? '';
+$fname = $_SESSION['fname'] ?? '';
+$mname = $_SESSION['mname'] ?? '';
+$section= $_SESSION["section"] ?? '';
+
+?>
+
 </head>
 <body>
     <h2>Philippine Science High School System</h2>
@@ -139,6 +152,7 @@
     <div class="form-container">
         <form action="submit_form.php" method="post">
             <div class="form-header">
+				
                 <div>
                     <label for="school-year">School Year (SY):</label>
                     <input type="text" id="school-year" name="school-year" placeholder="e.g., 2023-2024">
@@ -156,20 +170,183 @@
             </div>
 
             <div id="activityReportContainer">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Names</th>
-                            <th>Activity No.</th>
-                            <th>Remarks</th>
-                            <th>Achieved Learning Outcomes</th>
-                            <th>Strands Undertaken</th>
-                        </tr>
-                    </thead>
-                    <tbody id="activityRows">
-                        <!-- Rows will be dynamically inserted here -->
-                    </tbody>
-                </table>
+			<table><thead>
+						  <tr>
+							<th rowspan="2">Student Name</th>
+							<th colspan="5">Activity No.</th>
+							<th rowspan="2">Remarks</th>
+							<th rowspan="2">Achieved Learning Outcomes</th>
+							<th rowspan="2">Achieved Strands</th>
+						  </tr>
+						  <tr>
+							<th>1</th>
+							<th>2</th>
+							<th>3</th>
+							<th>4</th>
+							<th>5</th>
+						  </tr>
+						  </thead>
+						<tbody>
+						<?php 
+					
+           $sqlInfo = "SELECT users_tbl.u_id AS user_id, u_fname, u_mname, u_lname, ui_section, a_strand_s, a_strand_c, a_strand_a, a_strand_l, COUNT(i_a_id) AS activity_count
+            FROM users_tbl 
+            INNER JOIN users_info_tbl
+            ON users_tbl.u_id = users_info_tbl.u_id
+            LEFT JOIN individual_activity_tbl
+            ON users_tbl.u_id = individual_activity_tbl.u_id
+            LEFT JOIN activities_tbl
+            ON users_tbl.u_id = activities_tbl.u_id
+            WHERE ui_section = '$section' AND u_level = '3'
+            GROUP BY users_tbl.u_id, u_fname, u_mname, u_lname, ui_section";
+
+            $resultInfo = $conn->query($sqlInfo);
+            if ($resultInfo->num_rows > 0) {
+                while($rowInfo = $resultInfo->fetch_assoc()) {
+					$str1="";
+					$str2="";
+					$str3="";
+					$str4="";
+					$str5="";
+					$service = '';
+					$creativity = '';
+					$action = '';
+					$leadership = '';
+					$outcome1 ="";
+					$outcome2 ="";
+					$outcome3 ="";
+					$outcome4 ="";
+					$outcome5 ="";
+					$outcome6 ="";
+					$outcome7 ="";
+					$outcome8 ="";					
+					
+					if($rowInfo['activity_count'] >=1){
+						$str1="X";
+					}
+					if($rowInfo['activity_count'] >=2){
+						$str2="X";
+					}
+					if($rowInfo['activity_count'] >=1){
+						$str3="X";
+					}
+					if($rowInfo['activity_count'] >=2){
+						$str4="X";
+					}
+					if($rowInfo['activity_count'] >=1){
+						$str5="X";
+					}
+					
+					
+					if($rowInfo['a_strand_s'] ==1){
+						$service="S ";
+					}
+					
+					if($rowInfo['a_strand_c'] ==1){
+						$creativity=",C ";
+					}
+					if($rowInfo['a_strand_a'] ==1){
+						$action=",A ";
+					}
+					if($rowInfo['a_strand_l'] ==1){
+						$leadership=",L";
+					}
+				
+				
+					
+					
+				  $strand = $service . $creativity . $action . $leadership ;
+				  $outcome = $outcome1 . $outcome2 . $outcome3 . $outcome4 . $outcome5 . $outcome6 . $outcome7 . $outcome8 ;
+					
+					echo "<tr>";
+							echo "<td>" . strtoupper(htmlspecialchars($rowInfo['u_fname'])) . " " . strtoupper(htmlspecialchars($rowInfo['u_mname'])) . ". " . strtoupper(htmlspecialchars($rowInfo['u_lname'])) . "</td>";
+							echo "<td>".$str1."</td>";
+							echo "<td>".$str2."</td>";
+							echo "<td>".$str3."</td>";
+							echo "<td>".$str4."</td>";
+							echo "<td>".$str5."</td>";
+							echo "<td></td>";
+							echo "<td>";
+							 $sqlActivities ="SELECT a_outcome_1, a_outcome_2, a_outcome_3, a_outcome_4, a_outcome_5, a_outcome_6, a_outcome_7, a_outcome_8, a_title
+							 FROM individual_activity_tbl
+							 LEFT JOIN activities_tbl
+							 ON individual_activity_tbl.a_id = activities_tbl.a_id
+							 WHERE individual_activity_tbl.u_id= ".$rowInfo['user_id'];
+							 
+							 $resultActivities = $conn->query($sqlActivities);
+								if ($resultActivities->num_rows > 0) {
+									while($rowActivities = $resultActivities->fetch_assoc()) {
+										
+										$outcome1 ="";
+										$outcome2 ="";
+										$outcome3 ="";
+										$outcome4 ="";
+										$outcome5 ="";
+										$outcome6 ="";
+										$outcome7 ="";
+										$outcome8 ="";
+										
+										if($rowActivities['a_outcome_1'] ==1){
+											$outcome1="1 ";
+										}
+										
+										if($rowActivities['a_outcome_2'] ==1){
+											$outcome2=",2 ";
+										}
+										if($rowActivities['a_outcome_3'] ==1){
+											$outcome3=",3 ";
+										}
+										if($rowActivities['a_outcome_4'] ==1){
+											$outcome4=",4";
+											
+										}if($rowActivities['a_outcome_5'] ==1){
+											$outcome5=",5";
+										}
+										
+										if($rowActivities['a_outcome_6'] ==1){
+											$outcome6=",6 ";
+										}
+										if($rowActivities['a_outcome_7'] ==1){
+											$outcome7=",7 ";
+										}
+										if($rowActivities['a_outcome_8'] ==1){
+											$outcome8=",8";
+													}
+							echo "<p>".$rowActivities['a_title']. ":" . $outcome1 . $outcome2 . $outcome3 . $outcome4 . $outcome5 . $outcome6. $outcome7 .$outcome8."</p>";
+							} 
+							 
+							 
+							
+							
+							
+							
+							
+							"</td>";
+							echo "<td>".$strand."</td>";
+						    echo " </tr>";
+								}
+                }
+            } else {
+                echo "<tr><td colspan='4'>No materials added yet.</td></tr>";
+            }
+						?>
+						 
+						  <tr>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+						  </tr>
+						 
+	  
+				</tbody></table>
+               
+                
             </div>
             
             <div class="form-section">

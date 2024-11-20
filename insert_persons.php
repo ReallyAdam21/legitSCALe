@@ -5,6 +5,9 @@ include 'connect.php';
 // Fetch student ID
 $id = $_SESSION['id'] ?? null;
 
+
+$query_string_id =isset($_GET['a_id']) ? (int)$_GET['a_id'] : null;
+
 if (!$id) {
     echo "Please log in to add a person.";
     exit;
@@ -17,7 +20,7 @@ if (!$id) {
     <title>Add Person</title>
 </head>
 <body>
-    <form action="insert_persons_proc.php" method="post">
+    <form action="insert_persons_proc.php?a_id=<?php echo $query_string_id ?>" method="post">
         <label for="supervisor">Adult Supervisor/Collaborator:</label>
         <input type="text" name="txtSupervisor" required><br>
 

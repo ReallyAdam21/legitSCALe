@@ -1,3 +1,17 @@
+<?php
+
+session_start();
+include 'connect.php';
+
+// Check if the necessary session variables are set
+$id = $_SESSION['id'] ?? null;
+$lname = $_SESSION['lname'] ?? '';
+$fname = $_SESSION['fname'] ?? '';
+$mname = $_SESSION['mname'] ?? '';
+
+?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>

@@ -387,7 +387,7 @@ return $dropdown;
             </tr>
             <?php
             // Query to get persons involved data
-            $sqlPersons = "SELECT * FROM persons_tbl WHERE u_id = '$id'";
+            $sqlPersons = "SELECT * FROM persons_tbl WHERE u_id = '$id' AND a_id='$activityID'";
             $resultPersons = $conn->query($sqlPersons);
             if ($resultPersons->num_rows > 0) {
                 while($rowPersons = $resultPersons->fetch_assoc()) {
@@ -403,7 +403,7 @@ return $dropdown;
             }
             ?>
         </table>
-        <a href="insert_persons.php"><button type="button" class="add-button">Add Person</button></a>
+        <a href="insert_persons.php?a_id=<?php echo $activityID ?>&id=<?php echo $query_string_id?> "><button type="button" class="add-button">Add Person</button></a>
 
         <!-- Materials Needed -->
         <div class="section-title">Materials and Resources Needed</div>
@@ -416,7 +416,7 @@ return $dropdown;
             </tr>
             <?php
             // Query to get materials data
-            $sqlMaterials = "SELECT * FROM materials_tbl WHERE u_id = '$id'";
+            $sqlMaterials = "SELECT * FROM materials_tbl WHERE u_id = '$id' AND a_id='$activityID'";
             $resultMaterials = $conn->query($sqlMaterials);
             if ($resultMaterials->num_rows > 0) {
                 while($rowMaterials = $resultMaterials->fetch_assoc()) {
@@ -432,7 +432,7 @@ return $dropdown;
             }
             ?>
         </table>
-        <a href="insert_materials.php"><button type="button" class="add-button">Add Material</button></a>
+        <a href="insert_materials.php?a_id=<?php echo $activityID ?>&id=<?php echo $query_string_id?> "><button type="button" class="add-button">Add Material</button></a>
 
         <!-- Activity Risk Assessment -->
         <div class="section-title">Activity Risk Assessment</div>
@@ -443,7 +443,7 @@ return $dropdown;
             </tr>
             <?php
             // Query to get risk assessment data
-            $sqlRisks = "SELECT * FROM risks_tbl WHERE u_id = '$id'";
+            $sqlRisks = "SELECT * FROM risks_tbl WHERE u_id = '$id' AND a_id='$activityID'";
             $resultRisks = $conn->query($sqlRisks);
             if ($resultRisks->num_rows > 0) {
                 while($rowRisks = $resultRisks->fetch_assoc()) {
@@ -457,7 +457,7 @@ return $dropdown;
             }
             ?>
         </table>
-        <a href="insert_risks.php"><button type="button" class="add-button">Add Risk</button></a>
+        <a href="insert_risks.php?a_id=<?php echo $activityID ?>&id=<?php echo $query_string_id?> "><button type="button" class="add-button">Add Risk</button></a>
 
         <!-- Certification -->
         <div class="section-title">Certification</div>
