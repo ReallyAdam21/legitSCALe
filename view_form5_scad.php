@@ -8,9 +8,16 @@ $lname = $_SESSION['lname'] ?? '';
 $fname = $_SESSION['fname'] ?? '';
 $mname = $_SESSION['mname'] ?? '';
 // Fetch student's name
-$studentName = htmlspecialchars($lname . ", " . $fname . " " . $mname);
-
-$query_string_id =isset($_GET['id']) ? (int)$_GET['id'] : null;
+$query_string_id =isset($_GET['u_id']) ? (int)$_GET['u_id'] : null;
+//$studentName = htmlspecialchars($lname . ", " . $fname . " " . $mname);
+$queryStudent = "SELECT u_lname, u_fname, u_mname FROM users_tbl WHERE u_id=".$query_string_id;
+$statement =$conn->prepare($queryStudent);
+$statement->execute();
+		$result = $statement->get_result();
+		$details= $result->fetch_assoc();
+		if($details){
+				$studentName = $details['u_lname'].','. $details['u_fname'].' '. $details['u_mname'] ;
+			}
 $activityID = isset($_POST['txtActivityTitle']) ? (int)$_POST['txtActivityTitle'] : null;
 $isSubmit= isset($_POST['btnSubmit']) ? $_POST['btnSubmit'] : '';
 

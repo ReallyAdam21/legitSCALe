@@ -1,3 +1,16 @@
+<?php
+session_start();
+include 'connect.php';
+
+// Check if the necessary session variables are set
+$id = $_SESSION['id'] ?? null;
+$lname = $_SESSION['lname'] ?? '';
+$fname = $_SESSION['fname'] ?? '';
+$mname = $_SESSION['mname'] ?? '';
+$section= $_SESSION["section"] ?? '';
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -89,107 +102,72 @@
         display: block !important;
     }
 </style>
-<script>
-    function toggleDropdown(id) {
-        document.getElementById(id).classList.toggle("show");
-    }
 
-    function addRow(page) {
-        const table = document.getElementById(`table-page-${page}`);
-        const row = table.insertRow();
-        
-        if (page === 1) {
-            row.innerHTML = `
-                <td><input type="text" name="studentName"></td>
-                <td><input type="number" name="activitiesImplemented"></td>
-                <td><input type="date" name="completionDate"></td>
-                <td><input type="text" name="remarks"></td>
-            `;
-        } else {
-            row.innerHTML = `
-                <td><input type="text" name="studentName"></td>
-                <td><input type="number" name="activitiesImplemented"></td>
-                <td>
-                    <div class="multiselect-container">
-                        <button type="button" class="multiselect-button" onclick="toggleDropdown('outcomes-dropdown-${table.rows.length}')">Select Outcomes</button>
-                        <div id="outcomes-dropdown-${table.rows.length}" class="multiselect-dropdown">
-                            <label class="multiselect-checkbox"><input type="checkbox" name="outcome" value="O1"> O1 - Awareness of Strengths</label>
-                            <label class="multiselect-checkbox"><input type="checkbox" name="outcome" value="O2"> O2 - New Challenges</label>
-                            <label class="multiselect-checkbox"><input type="checkbox" name="outcome" value="O3"> O3 - Managed Activities</label>
-                            <label class="multiselect-checkbox"><input type="checkbox" name="outcome" value="O4"> O4 - Group Contribution</label>
-                            <label class="multiselect-checkbox"><input type="checkbox" name="outcome" value="O5"> O5 - Perseverance</label>
-                            <label class="multiselect-checkbox"><input type="checkbox" name="outcome" value="O6"> O6 - Global Issues</label>
-                            <label class="multiselect-checkbox"><input type="checkbox" name="outcome" value="O7"> O7 - Ethical Reflection</label>
-                            <label class="multiselect-checkbox"><input type="checkbox" name="outcome" value="O8"> O8 - New Skills</label>
-                        </div>
-                    </div>
-                </td>
-                <td>
-                    <div class="multiselect-container">
-                        <button type="button" class="multiselect-button" onclick="toggleDropdown('strands-dropdown-${table.rows.length}')">Select Strands</button>
-                        <div id="strands-dropdown-${table.rows.length}" class="multiselect-dropdown">
-                            <label class="multiselect-checkbox"><input type="checkbox" name="strand" value="S"> S - Service</label>
-                            <label class="multiselect-checkbox"><input type="checkbox" name="strand" value="C"> C - Creativity</label>
-                            <label class="multiselect-checkbox"><input type="checkbox" name="strand" value="A"> A - Action</label>
-                            <label class="multiselect-checkbox"><input type="checkbox" name="strand" value="L"> L - Leadership</label>
-                        </div>
-                    </div>
-                </td>
-                <td><input type="text" name="remarks"></td>
-            `;
-        }
-    }
-    
-    window.onclick = function(event) {
-        if (!event.target.matches('.multiselect-button') && !event.target.closest('.multiselect-dropdown')) {
-            const dropdowns = document.getElementsByClassName("multiselect-dropdown");
-            for (let i = 0; i < dropdowns.length; i++) {
-                dropdowns[i].classList.remove('show');
-            }
-        }
-    }
-</script>
 </head>
 <body>
-
+<?php include 'links.php'; ?>
 <h1>SCALE Advisers Endorsement Form</h1>
 
 <form action="#" method="post">
-    <!-- Page 1 Table -->
-    <div class="table-container">
-        <table id="table-page-1">
-            <tr>
-                <th>Name of Student</th>
-                <th>No. of SCALE Activities Implemented</th>
-                <th>Final Date of Completion of SCALE Activities</th>
-                <th>Remarks</th>
-            </tr>
-            <!-- 30 rows initially -->
-            <script>
-                for (let i = 0; i < 30; i++) addRow(1);
-            </script>
-        </table>
-    </div>
+   <table><thead>
+	  <tr>
+		<th>Name of Student</th>
+		<th>No. of SCALe Activities Implemented</th>
+		<th>Final Date of Completion of SCALe Activities</th>
+		<th>Remarks</th>
+	  </tr></thead>
+	<tbody>
+	<?php 
+					
+           $sqlInfo = "SELECT users_tbl.u_id AS user_id,s_a_endorsement_remarks, u_fname, u_mname, u_lname, ui_section, COUNT(i_a_id) AS activity_count, MAX(a_implement_date_end) as end_date
+            FROM users_tbl 
+            INNER JOIN users_info_tbl
+            ON users_tbl.u_id = users_info_tbl.u_id
+            LEFT JOIN individual_activity_tbl
+            ON users_tbl.u_id = individual_activity_tbl.u_id
+			LEFT JOIN scale_adviser_report_tbl
+			ON users_tbl.u_id =scale_adviser_report_tbl.student_u_id
+			AND scale_adviser_report_tbl.adviser_u_id = $id
+            WHERE ui_section = '$section' AND u_level = '3'
+            GROUP BY users_tbl.u_id, u_fname, u_mname, u_lname, ui_section,s_a_endorsement_remarks";
 
-    <!-- Page 2 Table -->
-    <div class="table-container">
-        <table id="table-page-2">
-            <tr>
-                <th>Name of Student</th>
-                <th>No. of SCALE Activities Implemented</th>
-                <th>Unachieved Learning Outcomes</th>
-                <th>Strands Not Undertaken</th>
-                <th>Remarks</th>
-            </tr>
-            <!-- 10 rows initially -->
-            <script>
-                for (let i = 0; i < 10; i++) addRow(2);
-            </script>
-        </table>
-        <button type="button" onclick="addRow(2)">Add More Rows</button>
-    </div>
+            $resultInfo = $conn->query($sqlInfo);
+            if ($resultInfo->num_rows > 0) {
+                while($rowInfo = $resultInfo->fetch_assoc()) {
+					
+					echo "<tr>";
+							echo "<td><a href=update_endorsement_remarks.php?u_id=".$rowInfo['user_id']." >". strtoupper(htmlspecialchars($rowInfo['u_fname'])) . " " . strtoupper(htmlspecialchars($rowInfo['u_mname'])) . ". " . strtoupper(htmlspecialchars($rowInfo['u_lname'])) . "</a></td>";
+							echo "<td>".$rowInfo['activity_count']."</td>";
+							echo "<td>".$rowInfo['end_date']."</td>";
+							echo "<td>".$rowInfo['s_a_endorsement_remarks']."</td>";
+							
+				}
+				
+			}
+			?>
+	  <tr>
+		<td></td>
+		<td></td>
+		<td></td>
+		<td></td>
+	  </tr>
+	  <tr>
+		<td></td>
+		<td></td>
+		<td></td>
+		<td></td>
+	  </tr>
+	  <tr>
+		<td></td>
+		<td></td>
+		<td></td>
+		<td></td>
+	  </tr>
+</tbody>
+</table>
+   
 
-    <!-- Adviser Information and Submit Button -->
+    
     <div class="form-footer">
         <label for="adviserName">Name of SCALE Adviser:</label>
         <input type="text" id="adviserName" name="adviserName" required><br>

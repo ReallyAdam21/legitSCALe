@@ -24,10 +24,12 @@ if ($resultCurrentUser && $resultCurrentUser->num_rows > 0) {
 // Determine the link for Form 1 based on user's u_level
 function getForm1Link($userLevel, $userId) {
     if ($userLevel == 3) {
-        return "view_form1_students.php?id=$userId";
+        return "view_form1_students.php?u_id=$userId";
     } elseif ($userLevel == 2) {
-        return "view_form1_scad.php?id=$userId";
-    } else {
+        return "view_form1_scad.php?u_id=$userId";
+    } elseif ($userLevel == 1) {
+        return "view_form1_scaco.php?u_id=$userId";
+    }else {
         return "#"; // Handle other cases or errors
     }
 }
@@ -38,7 +40,9 @@ function getForm2Link($userLevel, $userId) {
         return "view_form2_student.php?id=$userId";
     } elseif ($userLevel == 2) {
         return "view_form2_scad.php?id=$userId";
-    } else {
+    } elseif ($userLevel == 1) {
+        return "view_form2_scaco.php?id=$userId";
+    }else {
         return "#"; // Handle other cases or errors
     }
 }
@@ -48,6 +52,8 @@ function getForm3Link($userLevel, $userId) {
         return "view_form3_students.php?id=$userId";
     } elseif ($userLevel == 2) {
         return "view_form3_scad.php?id=$userId";
+    } elseif ($userLevel == 1) {
+        return "view_form3_scaco.php?id=$userId";
     } else {
         return "#"; // Handle other cases or errors
     }
@@ -58,7 +64,9 @@ function getForm4Link($userLevel, $userId) {
         return "view_form4_students.php?id=$userId";
     } elseif ($userLevel == 2) {
         return "view_form4_scad.php?id=$userId";
-    } else {
+    }  elseif ($userLevel == 1) {
+        return "view_form4_scaco.php?id=$userId";
+    }else {
         return "#"; // Handle other cases or errors
     }
 }
@@ -68,7 +76,9 @@ function getForm5Link($userLevel, $userId) {
         return "view_form5_students.php?id=$userId";
     } elseif ($userLevel == 2) {
         return "view_form5_scad.php?id=$userId";
-    } else {
+    }  elseif ($userLevel == 1) {
+        return "view_form5_scaco.php?id=$userId";
+    }else {
         return "#"; // Handle other cases or errors
     }
 }

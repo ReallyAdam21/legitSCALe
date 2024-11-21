@@ -6,6 +6,8 @@ if (!isset($_SESSION["level"])) {
     // If session level is not set, redirect to index.php or login page
     header("Location: index.php");
     exit();
+	
+	
 }
 ?>
 <!DOCTYPE html>

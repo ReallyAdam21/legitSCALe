@@ -102,15 +102,26 @@ if (!empty($sql)) {
                         <th>&nbsp;</th>
                     </tr>
                     <?php
+					
                     if ($result->num_rows > 0) {
                         while ($row = $result->fetch_assoc()) {
                     ?>
                             <tr>
                                 <td><?php echo $row["u_id"] ?></td>
                                 <td><?php echo $row["u_lname"] . " " . $row["u_fname"] . " " . $row["u_mname"] ?></td>
-                                <td><a href="update_user.php?id=<?php echo $row["u_id"] ?>" class="action-link">Form 1</a></td>
+                                <?php if ($level==2){?>
+								<td><a href="view_form1_students.php?u_id=<?php echo $row["u_id"] ?>" class="action-link">Form 1</a></td>
                                 <td><a href="view_form2_scad.php?u_id=<?php echo $row["u_id"] ?>" class="action-link">Form 2</a></td>
 								<td><a href="view_form3_scad.php?u_id=<?php echo $row["u_id"] ?>" class="action-link">Form 3</a></td>
+								<td><a href="view_form4_scad.php?u_id=<?php echo $row["u_id"] ?>" class="action-link">Form 4</a></td>
+								<td><a href="view_form5_scad.php?u_id=<?php echo $row["u_id"] ?>" class="action-link">Form 5</a></td>
+								<?php }else{ ?>
+								<td><a href="view_form1_students.php?u_id=<?php echo $row["u_id"] ?>" class="action-link">Form 1</a></td>
+                                <td><a href="view_form2_scaco.php?u_id=<?php echo $row["u_id"] ?>" class="action-link">Form 2</a></td>
+								<td><a href="view_form3_scaco.php?u_id=<?php echo $row["u_id"] ?>" class="action-link">Form 3</a></td>
+								<td><a href="view_form4_scaco.php?u_id=<?php echo $row["u_id"] ?>" class="action-link">Form 4</a></td>
+								<td><a href="view_form5_scaco.php?u_id=<?php echo $row["u_id"] ?>" class="action-link">Form 5</a></td>
+								<?php } ?>
                             </tr>
                     <?php
                         }

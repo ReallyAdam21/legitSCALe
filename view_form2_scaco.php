@@ -30,7 +30,7 @@ if ($resultStudent->num_rows > 0) {
 }
 
 // Fetch adviser's name with u_level 2
-$sqlAdviser = "SELECT u_lname, u_fname, u_mname FROM users_tbl WHERE u_level = 2 LIMIT 1";
+$sqlAdviser = "SELECT u_lname, u_fname, u_mname FROM users_tbl WHERE u_level = 1 LIMIT 1";
 $resultAdviser = $conn->query($sqlAdviser);
 
 if ($resultAdviser->num_rows > 0) {

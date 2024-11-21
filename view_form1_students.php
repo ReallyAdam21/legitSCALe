@@ -11,7 +11,7 @@ if (!isset($_SESSION['id'])) {
     exit; // Ensure script stops execution after redirection
 }
 
-$id = $_SESSION['id'];
+$id =isset($_GET['u_id']) ? (int)$_GET['u_id'] : null;
 
 // Fetch batch and grade from users_info_tbl
 $sqlUserInfo = "SELECT ui_batch, ui_grade FROM users_info_tbl WHERE u_id = '$id'";

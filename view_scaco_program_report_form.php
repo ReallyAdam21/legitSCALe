@@ -1,3 +1,16 @@
+
+<?php
+session_start();
+include 'connect.php';
+
+// Check if the necessary session variables are set
+$id = $_SESSION['id'] ?? null;
+$lname = $_SESSION['lname'] ?? '';
+$fname = $_SESSION['fname'] ?? '';
+$mname = $_SESSION['mname'] ?? '';
+$section= $_SESSION["section"] ?? '';
+
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -75,23 +88,6 @@
             text-align: center;
         }
 
-        .add-row-button {
-            display: block;
-            width: 100%;
-            padding: 6px;
-            font-size: 0.9em;
-            background-color: #2196F3;
-            color: #fff;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            margin-top: 8px;
-        }
-
-        .add-row-button:hover {
-            background-color: #1976D2;
-        }
-
         .signature-section {
             margin-top: 15px;
             display: flex;
@@ -104,28 +100,16 @@
             text-align: center;
         }
 
-        .btn-submit {
-            display: block;
-            width: 100%;
-            padding: 6px;
-            font-size: 0.9em;
-            background-color: #4CAF50;
-            color: #fff;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            margin-top: 15px;
-        }
-
-        .btn-submit:hover {
-            background-color: #45a049;
-        }
+        
     </style>
 </head>
+
 <body>
 
     <div class="container">
         <div class="top-section">
+		
+		<?php include 'links.php'; ?>
             <p>PHILIPPINE SCIENCE HIGH SCHOOL SYSTEM</p>
             <p>CAMPUS: __________________________</p>
             <p>SCALE COORDINATORS PROGRAM REPORT</p>
@@ -141,7 +125,6 @@
         <form id="scaleForm" onsubmit="return validateForm()">
             <div class="form-group">
                 <label for="campus">Campus:</label>
-                <input type="text" id="campus" name="campus" required>
             </div>
 
             <p>To the DSA Chief:</p>
@@ -151,25 +134,133 @@
 
             <p>The following students have yet to satisfactorily complete the Program and will have the 4th quarter to do so:</p>
 
-            <table id="studentTable">
-                <tr>
-                    <th>Name of Student</th>
-                    <th>Name of SCALE Adviser</th>
-                    <th>Strands that need to be addressed</th>
-                    <th>Learning Outcomes that need to be addressed</th>
-                </tr>
-                <!-- Initial 10 rows for student entries -->
-                <tr><td><input type="text" name="studentName1"></td><td><input type="text" name="scaleAdviser1"></td><td><input type="text" name="strands1"></td><td><input type="text" name="learningOutcomes1"></td></tr>
-                <tr><td><input type="text" name="studentName2"></td><td><input type="text" name="scaleAdviser2"></td><td><input type="text" name="strands2"></td><td><input type="text" name="learningOutcomes2"></td></tr>
-                <tr><td><input type="text" name="studentName3"></td><td><input type="text" name="scaleAdviser3"></td><td><input type="text" name="strands3"></td><td><input type="text" name="learningOutcomes3"></td></tr>
-                <tr><td><input type="text" name="studentName4"></td><td><input type="text" name="scaleAdviser4"></td><td><input type="text" name="strands4"></td><td><input type="text" name="learningOutcomes4"></td></tr>
-                <tr><td><input type="text" name="studentName5"></td><td><input type="text" name="scaleAdviser5"></td><td><input type="text" name="strands5"></td><td><input type="text" name="learningOutcomes5"></td></tr>
-                <tr><td><input type="text" name="studentName6"></td><td><input type="text" name="scaleAdviser6"></td><td><input type="text" name="strands6"></td><td><input type="text" name="learningOutcomes6"></td></tr>
-                <tr><td><input type="text" name="studentName7"></td><td><input type="text" name="scaleAdviser7"></td><td><input type="text" name="strands7"></td><td><input type="text" name="learningOutcomes7"></td></tr>
-                <tr><td><input type="text" name="studentName8"></td><td><input type="text" name="scaleAdviser8"></td><td><input type="text" name="strands8"></td><td><input type="text" name="learningOutcomes8"></td></tr>
-                <tr><td><input type="text" name="studentName9"></td><td><input type="text" name="scaleAdviser9"></td><td><input type="text" name="strands9"></td><td><input type="text" name="learningOutcomes9"></td></tr>
-                <tr><td><input type="text" name="studentName10"></td><td><input type="text" name="scaleAdviser10"></td><td><input type="text" name="strands10"></td><td><input type="text" name="learningOutcomes10"></td></tr>
-            </table>
+        <table><thead>
+			  <tr>
+				<th>Name of Student</th>
+				<th>Name of SCALe Adviser</th>
+				<th>Strands that need to be addressed</th>
+				<th>Learning outcomes that need to be addressed</th>
+			  </tr></thead>
+			<tbody>
+			<?php 
+			$sqlStudents = "SELECT u_fname, u_mname, u_lname, ui_section, SUM(a_strand_s) AS strand_s, SUM( a_strand_c) AS strand_c, SUM(a_strand_a) AS strand_a, SUM(a_strand_l) AS strand_l, SUM(a_outcome_1) AS outcome_1, SUM(a_outcome_2) AS outcome_2, SUM(a_outcome_3) AS outcome_3, SUM(a_outcome_4) AS outcome_4, SUM(a_outcome_5) AS outcome_5, SUM(a_outcome_6) AS outcome_6, SUM(a_outcome_7) AS outcome_7, SUM(a_outcome_8) AS outcome_8
+			FROM users_tbl 
+			INNER JOIN users_info_tbl
+			ON users_tbl.u_id = users_info_tbl.u_id
+			LEFT JOIN activities_tbl
+			ON users_tbl.u_id = activities_tbl.u_id
+			LEFT JOIN individual_activity_tbl
+			ON users_tbl.u_id = individual_activity_tbl.u_id
+			WHERE u_level =3
+			GROUP BY users_tbl.u_id, u_fname, u_mname, u_lname, ui_section";
+			
+			
+			 $resultStudents = $conn->query($sqlStudents);
+            if ($resultStudents->num_rows > 0) {
+                while($rowStudents = $resultStudents->fetch_assoc()) {
+					$str1= '';
+					$str2= '';
+					$str3= '';
+					$str4= '';
+					$outcome1 ="";
+					$outcome2 ="";
+					$outcome3 ="";
+					$outcome4 ="";
+					$outcome5 ="";
+					$outcome6 ="";
+					$outcome7 ="";
+					$outcome8 ="";
+					
+					if($rowStudents['strand_s'] == 0){
+						$str1='S ';
+					}
+					if($rowStudents['strand_c'] == 0){
+						$str2='C ';
+					}
+					if($rowStudents['strand_a'] == 0){
+						$str3='A ';
+						
+					}if($rowStudents['strand_l'] == 0){
+						$str4='L';
+					}
+					
+					if($rowStudents['outcome_1'] ==0){
+						$outcome1="1 ";
+					}
+					
+					if($rowStudents['outcome_2'] ==0){
+						$outcome2="2 ";
+					}
+					if($rowStudents['outcome_3'] ==0){
+						$outcome3="3 ";
+					}
+					if($rowStudents['outcome_4'] ==0){
+						$outcome4="4 ";
+						
+					}if($rowStudents['outcome_5'] ==0){
+						$outcome5="5 ";
+					}
+					
+					if($rowStudents['outcome_6'] ==0){
+						$outcome6="6 ";
+					}
+					if($rowStudents['outcome_7'] ==0){
+						$outcome7="7 ";
+					}
+					if($rowStudents['outcome_8'] ==0){
+						$outcome8="8 ";
+								}
+				 $outcomes = $outcome1 . $outcome2 . $outcome3 . $outcome4 . $outcome5 . $outcome6. $outcome7 .$outcome8;				
+				 $strand = $str1 . $str2 . $str3 . $str4 ;
+				 if ($strand !='' || $outcomes !=''){
+					echo "<tr>";
+							echo "<td>". strtoupper(htmlspecialchars($rowStudents['u_fname'])) . " " . strtoupper(htmlspecialchars($rowStudents['u_mname'])) . ". " . strtoupper(htmlspecialchars($rowStudents['u_lname'])) . "</a></td>";
+							echo "<td>";
+							
+							$sqlAdviser="SELECT u_fname, u_mname, u_lname,ui_section 
+							FROM users_tbl 
+							INNER JOIN users_info_tbl
+							ON users_tbl.u_id = users_info_tbl.u_id
+							WHERE u_level =2 AND ui_section ='".$rowStudents['ui_section']."'";
+							
+							 $resultAdviser = $conn->query($sqlAdviser);
+							if ($resultAdviser->num_rows > 0) {
+				
+								($rowAdviser = $resultAdviser->fetch_assoc());
+				
+								echo strtoupper(htmlspecialchars($rowAdviser['u_fname'])) . " " . strtoupper(htmlspecialchars($rowAdviser['u_mname'])) . ". " . strtoupper(htmlspecialchars($rowAdviser['u_lname']));
+
+							}
+							echo "</td>";
+							echo "<td>$strand</td>";
+							echo "<td>$outcomes</td>";
+							echo "</tr>";		
+				}
+				
+			}}
+			
+			?>
+			
+			  <tr>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+			  </tr>
+			  <tr>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+			  </tr>
+			  <tr>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+			  </tr>
+			</tbody>
+		</table>
 
             <button type="button" class="add-row-button" onclick="addRow()">Add Row (Max 15)</button>
 

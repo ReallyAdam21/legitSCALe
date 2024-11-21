@@ -11,7 +11,7 @@ $pword = $_POST['txtPword'];
 $sql = "SELECT 
 u_lname, u_fname, u_mname, users_tbl.u_id AS user_id, u_email, u_pword, u_level,ui_section
 FROM users_tbl 
-INNER JOIN users_info_tbl 
+LEFT JOIN users_info_tbl 
 ON users_tbl.u_id = users_info_tbl.u_id 
 
  WHERE u_email = '$email'";

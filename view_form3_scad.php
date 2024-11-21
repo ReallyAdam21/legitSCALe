@@ -39,11 +39,9 @@ $resultAdviser = $conn->query($sqlAdviser);
 $adviserName = '';
 if ($resultAdviser->num_rows > 0) {
     $rowAdviser = $resultAdviser->fetch_assoc();
-    $adviserName = $rowAdviser['u_lname'] . ' ' . $rowAdviser['u_fname'] . ' ' . $rowAdviser['u_mname'];
+    $adviserName =  $lname. ', ' . $fname . ' ' .$mname ;
 }
 
-// Fetch student's name
-$studentName = htmlspecialchars($lname . ", " . $fname . " " . $mname);
 
 // Fetch adviser's remarks and activity status
 $sqlRemarks = "SELECT a_sa_remarks, a_status FROM activities_tbl WHERE u_id = '$id' LIMIT 1";

@@ -146,6 +146,7 @@ $section= $_SESSION["section"] ?? '';
 
 </head>
 <body>
+<?php include 'links.php'; ?>
     <h2>Philippine Science High School System</h2>
     <h3>SCALE Advisers Quarterly Report</h3>
 
@@ -189,7 +190,7 @@ $section= $_SESSION["section"] ?? '';
 						<tbody>
 						<?php 
 					
-           $sqlInfo = "SELECT users_tbl.u_id AS user_id, u_fname, u_mname, u_lname, ui_section, a_strand_s, a_strand_c, a_strand_a, a_strand_l, COUNT(i_a_id) AS activity_count
+           $sqlInfo = "SELECT users_tbl.u_id AS user_id,s_a_r_remarks, u_fname, u_mname, u_lname, ui_section, a_strand_s, a_strand_c, a_strand_a, a_strand_l, COUNT(i_a_id) AS activity_count
             FROM users_tbl 
             INNER JOIN users_info_tbl
             ON users_tbl.u_id = users_info_tbl.u_id
@@ -197,6 +198,9 @@ $section= $_SESSION["section"] ?? '';
             ON users_tbl.u_id = individual_activity_tbl.u_id
             LEFT JOIN activities_tbl
             ON users_tbl.u_id = activities_tbl.u_id
+			LEFT JOIN scale_adviser_report_tbl
+			ON users_tbl.u_id =scale_adviser_report_tbl.student_u_id
+			AND scale_adviser_report_tbl.adviser_u_id = $id
             WHERE ui_section = '$section' AND u_level = '3'
             GROUP BY users_tbl.u_id, u_fname, u_mname, u_lname, ui_section";
 
@@ -259,13 +263,13 @@ $section= $_SESSION["section"] ?? '';
 				  $outcome = $outcome1 . $outcome2 . $outcome3 . $outcome4 . $outcome5 . $outcome6 . $outcome7 . $outcome8 ;
 					
 					echo "<tr>";
-							echo "<td>" . strtoupper(htmlspecialchars($rowInfo['u_fname'])) . " " . strtoupper(htmlspecialchars($rowInfo['u_mname'])) . ". " . strtoupper(htmlspecialchars($rowInfo['u_lname'])) . "</td>";
+							echo "<td><a href=update_remarks.php?u_id=".$rowInfo['user_id']." >". strtoupper(htmlspecialchars($rowInfo['u_fname'])) . " " . strtoupper(htmlspecialchars($rowInfo['u_mname'])) . ". " . strtoupper(htmlspecialchars($rowInfo['u_lname'])) . "</a></td>";
 							echo "<td>".$str1."</td>";
 							echo "<td>".$str2."</td>";
 							echo "<td>".$str3."</td>";
 							echo "<td>".$str4."</td>";
 							echo "<td>".$str5."</td>";
-							echo "<td></td>";
+							echo "<td>".$rowInfo['s_a_r_remarks']."</td>";
 							echo "<td>";
 							 $sqlActivities ="SELECT a_outcome_1, a_outcome_2, a_outcome_3, a_outcome_4, a_outcome_5, a_outcome_6, a_outcome_7, a_outcome_8, a_title
 							 FROM individual_activity_tbl
@@ -321,14 +325,12 @@ $section= $_SESSION["section"] ?? '';
 							
 							
 							
-							"</td>";
-							echo "<td>".$strand."</td>";
-						    echo " </tr>";
+							echo "</td>";
 								}
+								echo "<td>$strand</td>";
+								echo " </tr>";
                 }
-            } else {
-                echo "<tr><td colspan='4'>No materials added yet.</td></tr>";
-            }
+            } 
 						?>
 						 
 						  <tr>

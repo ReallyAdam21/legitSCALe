@@ -16,14 +16,17 @@ if (session_status() == PHP_SESSION_NONE) {
         // Check the value of $_SESSION['level'] for conditional links
         if ($level == 0 || $level == 1) {
             echo '<a href="view_users.php">USERS</a> | ';
+			echo '<a href="view_students.php">STUDENTS</a> |'; 
+			echo '<a href="view_coordinator_forms.php">FORMS</a>  ';
         }
 		if ($level == 3) {
 			echo '<a href="search_students.php">SEARCH STUDENTS</a> | ';
-			
+			echo '<a href="view_form.php">FORMS</a>  ';
 		}
         // Display the "Students" tab only if $_SESSION['level'] is not 0
         if ($level == 2) {
-            echo '<a href="view_students.php">STUDENTS</a> | ';
+            echo '<a href="view_students.php">STUDENTS</a> |'; 
+			echo '<a href="view_adviser_forms.php">FORMS</a>  ';
         }
 		
 
@@ -38,5 +41,5 @@ if (session_status() == PHP_SESSION_NONE) {
     }
     ?>
 
-    <a href="view_form.php">FORMS</a>
+    
 </h2>
