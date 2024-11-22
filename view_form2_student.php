@@ -94,7 +94,7 @@ $resultRemarks = $conn->query($remarks);
 </head>
 <?php include 'links.php'; ?>
 <body>
-    <form>
+    <form method="POST" target="_blank" action="report.php">
         <header>
             PHILIPPINE SCIENCE HIGH SCHOOL SYSTEM <br> CAMPUS: Philippine Science High School <br> <br> SCALE PROGRAM PROPOSAL FORM
         </header>
@@ -186,6 +186,7 @@ $resultRemarks = $conn->query($remarks);
         <p><b>Noted by: </b>Name and Signature of SCALE Coordinator</p>
         <br><br><br>
 		
+		<a href="report.php"><input type="submit" name="btnSubmit" id="btnSubmit">PRINT</a>
     </form>
 </body>
 </html>
