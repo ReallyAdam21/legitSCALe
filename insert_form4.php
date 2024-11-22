@@ -112,7 +112,7 @@ if ($conn->query($sql) === TRUE) {
             </tr>
             <tr>
                 <td><input type="submit" id= "btnSubmit" name ="btnSubmit" value="SUBMIT"></td>
-                <td><a href="view_form4_student.php"><input type="button" value="BACK"></a></td>
+                <td><a href="view_form4_students.php"><input type="button" value="BACK"></a></td>
             </tr>
         </table>
     </form>
