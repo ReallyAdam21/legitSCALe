@@ -9,6 +9,16 @@ $lname = $_SESSION['lname'] ?? '';
 $fname = $_SESSION['fname'] ?? '';
 $mname = $_SESSION['mname'] ?? '';
 
+$queryActivities = "SELECT u_fname, u_mname, u_lname, ui_section, SUM(a_strand_s) AS strand_s, SUM( a_strand_c) AS strand_c, SUM(a_strand_a) AS strand_a, SUM(a_strand_l) AS strand_l, SUM(a_outcome_1) AS outcome_1, SUM(a_outcome_2) AS outcome_2, SUM(a_outcome_3) AS outcome_3, SUM(a_outcome_4) AS outcome_4, SUM(a_outcome_5) AS outcome_5, SUM(a_outcome_6) AS outcome_6, SUM(a_outcome_7) AS outcome_7, SUM(a_outcome_8) AS outcome_8
+			FROM users_tbl 
+			INNER JOIN users_info_tbl
+			ON users_tbl.u_id = users_info_tbl.u_id
+			LEFT JOIN activities_tbl
+			ON users_tbl.u_id = activities_tbl.u_id
+			LEFT JOIN individual_activity_tbl
+			ON users_tbl.u_id = individual_activity_tbl.u_id
+			WHERE u_level =3
+			GROUP BY users_tbl.u_id, u_fname, u_mname, u_lname";
 ?>
 
 
@@ -110,101 +120,185 @@ $mname = $_SESSION['mname'] ?? '';
             <!-- Part I: Updates on Institutional SCALE Performance -->
             <div class="section-header">I. Updates on Institutional SCALE Performance</div>
             <table>
-                <tr>
-                    <td class="label-col">SY:</td>
-                    <td class="input-col"><input type="text" id="schoolYear" name="schoolYear" required></td>
-                    <td class="label-col">Quarter:</td>
-                    <td class="input-col">
-                        <select id="quarter" name="quarter" required>
-                            <option value="1">1st Quarter</option>
-                            <option value="2">2nd Quarter</option>
-                            <option value="3">3rd Quarter</option>
-                            <option value="4">4th Quarter</option>
-                        </select>
-                    </td>
-                </tr>
-            </table>
-            <table class="compact-table">
-                <tr>
-                    <th>Student SCALE Activities Implemented</th>
-                    <th>Strand (S/C/A/L)</th>
-                    <th>Dates/Duration</th>
-                    <th>No. of PSHS Students Involved</th>
-                    <th>Beneficiaries/Other Persons Involved</th>
-                    <th>Form of Publicity/Reporting</th>
-                    <th>Remarks</th>
-                </tr>
-                <tr>
-                    <td><textarea name="activitiesImplemented" rows="2"></textarea></td>
-                    <td><input type="text" name="strand" /></td>
-                    <td><input type="text" name="datesDuration" /></td>
-                    <td><input type="number" name="studentsInvolved" /></td>
-                    <td><textarea name="beneficiariesInvolved" rows="2"></textarea></td>
-                    <td><textarea name="publicityForm" rows="2"></textarea></td>
-                    <td><textarea name="remarks" rows="2"></textarea></td>
-                </tr>
-            </table>
+				<thead>
+					  <tr>
+						<th>Student SCALE Activities Implemented</th>
+						<th>Strand (S/C/A/L)</th>
+						<th>Dates/ Duration</th>
+						<th>No. of PSHS Students Involved</th>
+						<th>Beneficiaries/ Other Persons Involved</th>
+						<th>Form of Publicity/ Reporting</th>
+						<th>Remarks</th>
+					  </tr>
+				</thead>
+					<tbody>
+					  <tr>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+					  </tr>
+					  <tr>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+					  </tr>
+					  <tr>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+					  </tr>
+					  <tr>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+					  </tr>
+					  <tr>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+					  </tr>
+					  <tr>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+					  </tr>
+					  <tr>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+					  </tr>
+					  <tr>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+					  </tr>
+					  <tr>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+					  </tr>
+					  <tr>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+					  </tr>
+					</tbody>
+			</table>
 
             <!-- Part II: Updates on Student SCALE Performance -->
             <div class="section-header">II. Updates on Student SCALE Performance</div>
-            <table class="compact-table">
-                <tr>
-                    <th rowspan="2">No. of Students</th>
-                    <th colspan="3">No. of Students who completed</th>
-                    <th colspan="3">Overall Student Progress</th>
-                    <th rowspan="2">Usual Causes of Delay in SCALE</th>
-                    <th rowspan="2">Action to be Taken to Improve SCALE</th>
-                </tr>
-                <tr>
-                    <th>Grade 11</th>
-                    <th>Grade 12</th>
-                    <th>Total</th>
-                    <th>As Scheduled</th>
-                    <th>Ahead of Time</th>
-                    <th>Delayed</th>
-                </tr>
-                <tr>
-                    <td><input type="number" id="noOfStudentsGrade11" name="noOfStudentsGrade11" min="0"></td>
-                    <td><input type="number" id="noOfStudentsGrade12" name="noOfStudentsGrade12" min="0"></td>
-                    <td><input type="number" id="noOfStudentsTotal" name="noOfStudentsTotal" min="0"></td>
-                    <td><input type="number" id="scheduled" name="scheduled" min="0"></td>
-                    <td><input type="number" id="ahead" name="ahead" min="0"></td>
-                    <td><input type="number" id="delayed" name="delayed" min="0"></td>
-                    <td><textarea id="causesOfDelay" name="causesOfDelay" rows="2"></textarea></td>
-                    <td><textarea id="actionsToImprove" name="actionsToImprove" rows="2"></textarea></td>
-                </tr>
-            </table>
-
-            <!-- Compact Table for Student-Initiated SCALE, Learning Outcomes, and Strands of Concern -->
-            <table class="compact-table">
-                <tr>
-                    <th colspan="4">Additional Metrics</th>
-                </tr>
-                <tr>
-                    <th>Metric</th>
-                    <th>Grade 11</th>
-                    <th>Grade 12</th>
-                    <th>Total</th>
-                </tr>
-                <tr>
-                    <td>No. of Student-Initiated SCALE</td>
-                    <td><input type="number" id="grade11StudentInitiated" name="grade11StudentInitiated" min="0"></td>
-                    <td><input type="number" id="grade12StudentInitiated" name="grade12StudentInitiated" min="0"></td>
-                    <td><input type="number" id="totalStudentInitiated" name="totalStudentInitiated" min="0"></td>
-                </tr>
-                <tr>
-                    <td>Learning Outcomes of Concern (least no. achieved)</td>
-                    <td><textarea id="grade11LearningOutcomes" name="grade11LearningOutcomes" rows="2"></textarea></td>
-                    <td><textarea id="grade12LearningOutcomes" name="grade12LearningOutcomes" rows="2"></textarea></td>
-                    <td><textarea id="totalLearningOutcomes" name="totalLearningOutcomes" rows="2"></textarea></td>
-                </tr>
-                <tr>
-                    <td>Strands of Concern (least no.)</td>
-                    <td><textarea id="grade11StrandsOfConcern" name="grade11StrandsOfConcern" rows="2"></textarea></td>
-                    <td><textarea id="grade12StrandsOfConcern" name="grade12StrandsOfConcern" rows="2"></textarea></td>
-                    <td><textarea id="totalStrandsOfConcern" name="totalStrandsOfConcern" rows="2"></textarea></td>
-                </tr>
-            </table>
+            <table>
+				<thead>
+					  <tr>
+						<th colspan="2"></th>
+						<th colspan="2">Grade 11</th>
+						<th colspan="2">Grade 12</th>
+						<th colspan="2">Total</th>
+					  </tr>
+				</thead>
+					<tbody>
+					  <tr>
+						<td colspan="2">No. of Students</td>
+						<td colspan="2"></td>
+						<td colspan="2"></td>
+						<td colspan="2"></td>
+					  </tr>
+					  <tr>
+						<td colspan="2">No. of Students who completed</td>
+						<td colspan="2"></td>
+						<td colspan="2"></td>
+						<td colspan="2"></td>
+					  </tr>
+					  <tr>
+						<tr>
+						<td rowspan="3">Overall Student Progress</td>
+						<td>As Scheduled</td>
+						<td colspan="2"></td>
+						<td colspan="2"></td>
+						<td colspan="2"></td>
+					  </tr>
+					  <tr>
+						<td>Ahead of Time</td>
+						<td colspan="2"></td>
+						<td colspan="2"></td>
+						<td colspan="2"></td>
+					  </tr>
+					  <tr>
+						<td>Delayed</td>
+						<td colspan="2"></td>
+						<td colspan="2"></td>
+						<td colspan="2"></td>
+					  </tr>
+					  <tr>
+						<td colspan="4">Usual Causes of Delay in SCALe</td>
+						<td colspan="4">Action to be taken to improve SCALe</td>
+					  </tr>
+					   <tr>
+						<th colspan="2"></th>
+						<th colspan="2">Grade 11</th>
+						<th colspan="2">Grade 12</th>
+						<th colspan="2">Total</th>
+					  </tr>
+					  <tr>
+						<td colspan="2">No. of Student-Initiated SCALe</td>
+						<td colspan="2"></td>
+						<td colspan="2"></td>
+						<td colspan="2"></td>
+					  </tr>
+					  <tr>
+						<td colspan="2">Learning Outcome of Concern (least no. achieved)</td>
+						<td colspan="2"></td>
+						<td colspan="2"></td>
+						<td colspan="2"></td>
+					  </tr>
+					  <tr>
+						<td colspan="2">Strands of Concern (least no. achieved)</td>
+						<td colspan="2"></td>
+						<td colspan="2"></td>
+						<td colspan="2"></td>
+					  </tr>
+					</tbody>
+				</table>
 
             <!-- Part III: Coordinator Information -->
             <div class="section-header">Coordinator Information</div>
