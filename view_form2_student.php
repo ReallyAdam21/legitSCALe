@@ -186,7 +186,7 @@ $resultRemarks = $conn->query($remarks);
         <p><b>Noted by: </b>Name and Signature of SCALE Coordinator</p>
         <br><br><br>
 		
-		<a href="report.php"><input type="submit" name="btnSubmit" id="btnSubmit">PRINT</a>
+		<a href="form2_printable.php"><input type="submit" name="btnSubmit" id="btnSubmit">PRINT</a>
     </form>
 </body>
 </html>
