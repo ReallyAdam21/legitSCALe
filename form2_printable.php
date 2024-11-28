@@ -32,10 +32,11 @@ $sqlAdviser = "SELECT u_lname, u_fname, u_mname FROM users_tbl WHERE u_level = 2
 $resultAdviser = $conn->query($sqlAdviser);
 
 $studentName = htmlspecialchars($_SESSION['lname'] . ", " . $_SESSION['fname'] . " " . $_SESSION['mname']);
-
+$studentsName = strtoupper($studentName);
 if ($resultAdviser && $resultAdviser->num_rows > 0) {
     $rowAdviser = $resultAdviser->fetch_assoc();
     $adviserName = $rowAdviser['u_lname'] . ' ' . $rowAdviser['u_fname'] . ' ' . $rowAdviser['u_mname'];
+	$advisersName = strtoupper($adviserName);
 }
 
 // Fetch submission date (assuming it's stored in activities_tbl for the user)
@@ -50,6 +51,10 @@ if ($resultSubmissionDate && $resultSubmissionDate->num_rows > 0) {
 // Suppress warnings by using proper error handling
 $remarks = "SELECT a_sa_remarks, a_status FROM activities_tbl WHERE u_id ='$id' LIMIT 1";
 $resultRemarks = $conn->query($remarks);
+
+
+
+/////END OF SQL
 
 // Variables
 $title = 'Philippine Science High School';
@@ -72,9 +77,9 @@ $pdf->Ln(5);
 
 // Student Information Section
 $pdf->SetFont('Arial', '', 10);
-$pdf->Cell(90, 10, 'Name of Student: ' . $studentName, 0, 0);
+$pdf->Cell(90, 10, 'Name of Student: ' . $studentsName, 0, 0);
 $pdf->Cell(50, 10, 'Batch: ', 0, 1);
-$pdf->Cell(90, 10, 'Name of Adviser: ' . $adviserName, 0, 1);
+$pdf->Cell(90, 10, 'Name of Adviser: ' . $advisersName, 0, 1);
 $pdf->Cell(90, 10, 'Date of Submission: ' . $subDate, 0, 1);
 $pdf->Ln(5);
 
@@ -93,16 +98,25 @@ $pdf->Cell(25, 7.5, 'End', 1, 1, 'C');
 if ($resultActivities && $resultActivities->num_rows > 0) {
     while ($row = $resultActivities->fetch_assoc()) {
         $title = $row["a_title"] ?? 'N/A'; // Use 'N/A' if key does not exist
-        $strand = $row["a_strand"] ?? 'N/A';
+        
         $type = $row["a_type"] ?? 'N/A';
-        $startDate = $row["a_start_date"] ?? 'N/A';
-        $endDate = $row["a_end_date"] ?? 'N/A';
+        $startDate = $row["a_start"] ?? 'N/A';
+        $endDate = $row["a_end"] ?? 'N/A';
+		$strands = array();
+			if ($row["a_strand_s"]) $strands[] = "S";
+			if ($row["a_strand_c"]) $strands[] = "C";
+			if ($row["a_strand_a"]) $strands[] = "A";
+			if ($row["a_strand_l"]) $strands[] = "L";
+			// Convert strands array to a string
+				$strandString = implode(" ", $strands);
 
-        $pdf->Cell(60, 10, $title, 1, 0); 
-        $pdf->Cell(30, 10, $strand, 1, 0); 
-        $pdf->Cell(30, 10, $type, 1, 0); 
-        $pdf->Cell(25, 10, $startDate, 1, 0); 
-        $pdf->Cell(25, 10, $endDate, 1, 1); 
+		$pdf->Cell(60, 10, $title, 1, 0); 
+		$pdf->Cell(30, 10, $strandString, 1, 0); 
+		$pdf->Cell(30, 10, $type, 1, 0); 
+		$pdf->Cell(25, 10, $startDate, 1, 0); 
+		$pdf->Cell(25, 10, $endDate, 1, 1); 
+	
+        
     }
 } else {
     // Add placeholder rows
