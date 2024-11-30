@@ -220,7 +220,8 @@ if($activityID) {
 function getActivity (){
 	global $conn; 
 	global $activityID;
-$sqlQueryActivity = "SELECT a_id, a_title FROM activities_tbl";
+	global $query_string_id;
+$sqlQueryActivity = "SELECT a_id, a_title FROM activities_tbl WHERE u_id=".$query_string_id;
 $resultActivity = $conn->query($sqlQueryActivity);
 
 
