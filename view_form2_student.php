@@ -161,6 +161,9 @@ $resultRemarks = $conn->query($remarks);
                 <tr>
                     <td colspan="8"><a href="insert_form2.php"><input type="button" value="ADD"></a></td>
                 </tr>
+				<tr>
+                    <td colspan="8"><a href="join_group.php"><input type="button" value="Join"></a></td>
+                </tr>
             <?php } ?>
         </table>
 		
