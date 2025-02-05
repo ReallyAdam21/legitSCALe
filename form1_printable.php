@@ -1,5 +1,51 @@
 <?php
 require('fpdf/fpdf.php');
+include 'connect.php'; // Include your database connection file
+
+if (isset($_GET['u_id'])) {
+    $u_id = $_GET['u_id'];
+} else {
+    echo "Error: u_id not provided.";
+    exit();
+}
+
+$id = (int)$_POST['u_id']; // Sanitize input to prevent SQL injection
+
+// Fetch batch and grade from users_info_tbl
+$sqlUserInfo = "SELECT ui_batch, ui_grade FROM users_info_tbl WHERE u_id = '$u_id'";
+$resultUserInfo = $conn->query($sqlUserInfo);
+
+$batch = '';
+$grade = '';
+if ($resultUserInfo && $resultUserInfo->num_rows > 0) {
+    $rowUserInfo = $resultUserInfo->fetch_assoc();
+    $batch = htmlspecialchars($rowUserInfo['ui_batch']);
+    $grade = htmlspecialchars($rowUserInfo['ui_grade']);
+}
+
+// Fetch user details
+$sqlUser = "SELECT u_lname, u_fname, u_mname FROM users_tbl WHERE u_id = '$u_id'";
+$resultUser = $conn->query($sqlUser);
+
+$fullName = 'Unknown';
+if ($resultUser && $resultUser->num_rows > 0) {
+    $rowUser = $resultUser->fetch_assoc();
+    $fullName = htmlspecialchars($rowUser['u_lname']) . ", " . 
+                htmlspecialchars($rowUser['u_fname']) . " " . 
+                htmlspecialchars($rowUser['u_mname']);
+}
+
+// Fetch inside clubs data
+$sqlIn = "SELECT * FROM sin_clubs_tbl WHERE u_id = '$u_id'";
+$resultIn = $conn->query($sqlIn);
+
+// Fetch outside clubs data
+$sqlOut = "SELECT * FROM sout_clubs_tbl WHERE u_id = '$u_id'";
+$resultOut = $conn->query($sqlOut);
+
+// Fetch spearheaded activities
+$sqlSpearhead = "SELECT * FROM spearhead_tbl WHERE u_id = '$u_id'";
+$resultSpearhead = $conn->query($sqlSpearhead);
 
 class PDF extends FPDF
 {
@@ -8,7 +54,7 @@ class PDF extends FPDF
         $this->SetFont('Arial', 'B', 12);
         $this->Cell(0, 8, 'PHILIPPINE SCIENCE HIGH SCHOOL SYSTEM', 0, 1, 'C');
         $this->SetFont('Arial', 'B', 12);
-		$this->Cell(0, 7, 'Campus:______________________', 0, 1, 'C');
+		$this->Cell(0, 7, 'Campus: Central Luzon', 0, 1, 'C');
 		$this->Ln(7);
 		$this->SetFont('Arial', 'B', 11);
         $this->Cell(0, 6, 'SCALE PERSONAL INFORMATION SHEET', 0, 1, 'C');
@@ -56,43 +102,72 @@ $x = $pdf->GetX();  // Get the current X position
 $pdf->SetX(20);  // Set the X position for Name field
 // Student Information Section
 $pdf->SetFont('Arial', '', 10);
-$pdf->Cell(95, 6, 'Name: ________________________________________', 0, 0);
-$pdf->Cell(45, 6, 'Batch: _______', 0, 0);
-$pdf->Cell(40, 6, 'Grade: _______', 0, 1);
+$pdf->Cell(95, 6, 'Name: ' . $fullName, 0, 0);
+$pdf->Cell(45, 6, 'Batch: ' . $batch, 0, 0);
+$pdf->Cell(40, 6, 'Grade: ' . $grade, 0, 1);
 $pdf->Ln(7);
 
 // Clubs/Associations Joined in PSHS
 $pdf->SetFont('Arial', 'B', 9);
-$pdf->Cell(70, 6, 'Club/Association', 1, 0, 'C');
+$pdf->Cell(70, 6, 'Name of Club/Association joined in PSHS', 1, 0, 'C');
 $pdf->Cell(60, 6, 'Position/Designation', 1, 0, 'C');
 $pdf->Cell(40, 6, 'Length of Membership', 1, 1, 'C');
 $pdf->SetFont('Arial', '', 9);
-for ($i = 0; $i < 3; $i++) {
+
+$rowCount = 0; // Counter for the number of rows
+
+// Check if there are results
+if ($resultIn->num_rows > 0) {
+    while ($rowCount < 4 && $rowIn = $resultIn->fetch_assoc()) {
+        $pdf->Cell(70, 6, htmlspecialchars($rowIn["sin_name"]), 1, 0);
+        $pdf->Cell(60, 6, htmlspecialchars($rowIn["sin_position"]), 1, 0);
+        $pdf->Cell(40, 6, htmlspecialchars($rowIn["sin_length"]), 1, 1);
+        $rowCount++;
+    }
+}
+
+// Fill remaining rows with empty cells if there are fewer than 4 rows
+while ($rowCount < 4) {
     $pdf->Cell(70, 6, '', 1, 0);
     $pdf->Cell(60, 6, '', 1, 0);
     $pdf->Cell(40, 6, '', 1, 1);
+    $rowCount++;
 }
+
 $pdf->Ln(7);
 
-// Clubs/Associations Outside PSHS
+//Clubs/ Associations joined outside of PSHS
 $pdf->SetFont('Arial', 'B', 9);
-$pdf->Cell(70, 6, 'Club/Association', 1, 0, 'C');
+$pdf->Cell(70, 6, 'Name of Club/Association joined outside PSHS', 1, 0, 'C');
 $pdf->Cell(60, 6, 'Position/Designation', 1, 0, 'C');
 $pdf->Cell(40, 6, 'Length of Membership', 1, 1, 'C');
 $pdf->SetFont('Arial', '', 9);
-for ($i = 0; $i < 3; $i++) {
+
+$rowCount = 0; // Counter for the number of rows
+
+// Check if there are results
+if ($resultOut->num_rows > 0) {
+    while ($rowCount < 4 && $rowOut = $resultOut->fetch_assoc()) {
+        $pdf->Cell(70, 6, htmlspecialchars($rowOut["sout_name"]), 1, 0);
+        $pdf->Cell(60, 6, htmlspecialchars($rowOut["sout_position"]), 1, 0);
+        $pdf->Cell(40, 6, htmlspecialchars($rowOut["sout_length"]), 1, 1);
+        $rowCount++;
+    }
+}
+
+// Fill remaining rows with empty cells if there are fewer than 4 rows
+while ($rowCount < 4) {
     $pdf->Cell(70, 6, '', 1, 0);
     $pdf->Cell(60, 6, '', 1, 0);
     $pdf->Cell(40, 6, '', 1, 1);
+    $rowCount++;
 }
-$pdf->Ln(7);
 
-// Hobbies, Arts, Instruments, Sports Section
-$pdf->Cell(0, 6, 'Other hobbies/interests, arts and crafts, musical instruments, and sports you have played:', 1, 1, 'L');
+$pdf->Ln(7);
 
 // First row: Add bordered columns for hobbies, arts, instruments, and sports with wrapped text
 $pdf->SetFont('Arial', '', 8);  // Reduced font size for the four columns
-$pdf->FourColumnRow(42.5, 42.5, 42.5, 42.5, 'Sports you have played', 'Musical instruments you have', 'Arts and crafts you have skill in:', 'Other hobbies/ interests:');
+$pdf->FourColumnRow(42.5, 42.5, 42.5, 42.5, 'Sports you have played:', 'Musical instruments you have', 'Arts and crafts you have skill in:', 'Other hobbies/ interests:');
 
 // Second row: Remove top and bottom borders for this row
 $pdf->SetFont('Arial', '', 10); // Reset to default font size
@@ -100,6 +175,8 @@ $pdf->FourColumnRow(42.5, 42.5, 42.5, 42.5, '', 'played:', '', '', 0); // No bor
 $pdf->FourColumnRow(42.5, 42.5, 42.5, 42.5, '', '', '', '', 0); // No borders for the second row
 $pdf->FourColumnRow(42.5, 42.5, 42.5, 42.5, '', '', '', '', 0); // No borders for the second row
 $pdf->Ln(0);
+
+//sql for the tables
 
 // Add borders to close the bottom of the last row for these fields
 $pdf->Cell(42.5, 0, '', 'T', 0); // Hobbies
