@@ -47,16 +47,79 @@ $resultOut = $conn->query($sqlOut);
 $sqlSpearhead = "SELECT * FROM spearhead_tbl WHERE u_id = '$u_id'";
 $resultSpearhead = $conn->query($sqlSpearhead);
 
+// Fetch sports data
+$sqlSports = "SELECT * FROM sport_tbl WHERE u_id = '$u_id'";
+$resultSports = $conn->query($sqlSports);
+
+// Fetch instruments data
+$sqlInstruments = "SELECT * FROM instruments_tbl WHERE u_id = '$u_id'";
+$resultInstruments = $conn->query($sqlInstruments);
+
+// Fetch art data
+$sqlArt = "SELECT * FROM arts_tbl WHERE u_id = '$u_id'";
+$resultArt = $conn->query($sqlArt);
+
+// Fetch hobby data
+$sqlHobby = "SELECT * FROM hobbies_tbl WHERE u_id = '$u_id'";
+$resultHobby = $conn->query($sqlHobby);
+
+$sports = [];
+$instrum = [];
+$art = [];
+$hobby = [];
+
+while ($rowSports = $resultSports->fetch_assoc()) {
+    $sports[] = $rowSports["u_sport_name"];
+}
+while ($rowInstruments = $resultInstruments->fetch_assoc()) {
+    $instrum[] = $rowInstruments["u_instrument_name"];
+}
+while ($rowArt = $resultArt->fetch_assoc()) {
+    $art[] = $rowArt["u_arts_name"];
+}
+while ($rowHobby = $resultHobby->fetch_assoc()) {
+    $hobby[] = $rowHobby["u_hobbies_name"];
+}
+
+$sqlInterests = "SELECT u_interests_name FROM interests_tbl WHERE u_id = '$u_id'";
+$resultInterests = $conn->query($sqlInterests);
+
+$interests = [];
+if ($resultInterests && $resultInterests->num_rows > 0) {
+    while ($rowInterests = $resultInterests->fetch_assoc()) {
+        $interests[] = htmlspecialchars($rowInterests["u_interests_name"]);
+    }
+}
+
+$sqlSpearhead = "SELECT u_activities_name FROM spearhead_tbl WHERE u_id = '$u_id'";
+$resultSpearhead = $conn->query($sqlSpearhead);
+
+$spearhead = [];
+if ($resultSpearhead && $resultSpearhead->num_rows > 0) {
+    while ($rowSpearhead = $resultSpearhead->fetch_assoc()) {
+        $spearhead[] = htmlspecialchars($rowSpearhead["u_activities_name"]);
+    }
+}
+
 class PDF extends FPDF
 {
+    function formatMultiRow($data, $maxPerRow = 3) {
+        $chunks = array_chunk($data, $maxPerRow);
+        $formattedRows = [];
+        foreach ($chunks as $chunk) {
+            $formattedRows[] = implode(", ", $chunk);
+        }
+        return $formattedRows;
+    }
+
     function header()
     {
         $this->SetFont('Arial', 'B', 12);
         $this->Cell(0, 8, 'PHILIPPINE SCIENCE HIGH SCHOOL SYSTEM', 0, 1, 'C');
         $this->SetFont('Arial', 'B', 12);
-		$this->Cell(0, 7, 'Campus: Central Luzon', 0, 1, 'C');
-		$this->Ln(7);
-		$this->SetFont('Arial', 'B', 11);
+        $this->Cell(0, 7, 'Campus: Central Luzon', 0, 1, 'C');
+        $this->Ln(7);
+        $this->SetFont('Arial', 'B', 11);
         $this->Cell(0, 6, 'SCALE PERSONAL INFORMATION SHEET', 0, 1, 'C');
         $this->Ln(7);
     }
@@ -79,8 +142,6 @@ class PDF extends FPDF
     function FourColumnRow($w1, $w2, $w3, $w4, $txt1, $txt2, $txt3, $txt4, $borderTopBottom = 1)
     {
         $this->SetFont('Arial', '', 8);  // Reduced font size for this section
-        // Add text in each column using MultiCell for wrapping with left and right borders
-        // Apply top and bottom borders if needed
         $this->Cell($w1, 6, $txt1, ($borderTopBottom ? 'LRT' : 'LR'), 0, 'L');
         $this->Cell($w2, 6, $txt2, ($borderTopBottom ? 'LRT' : 'LR'), 0, 'L');
         $this->Cell($w3, 6, $txt3, ($borderTopBottom ? 'LRT' : 'LR'), 0, 'L');
@@ -90,6 +151,11 @@ class PDF extends FPDF
 
 // Create a new PDF instance
 $pdf = new PDF();
+// Format sports, instruments, arts, and hobbies into groups of 3 per row
+$sportsRows = $pdf->formatMultiRow($sports);
+$instrumRows = $pdf->formatMultiRow($instrum);
+$artRows = $pdf->formatMultiRow($art);
+$hobbyRows = $pdf->formatMultiRow($hobby);
 $pdf->AliasNbPages();
 $pdf->AddPage();
 $pdf->SetMargins(20, 10, 20); // Margins
@@ -147,7 +213,7 @@ $rowCount = 0; // Counter for the number of rows
 
 // Check if there are results
 if ($resultOut->num_rows > 0) {
-    while ($rowCount < 4 && $rowOut = $resultOut->fetch_assoc()) {
+    while ($rowCount < 3 && $rowOut = $resultOut->fetch_assoc()) {
         $pdf->Cell(70, 6, htmlspecialchars($rowOut["sout_name"]), 1, 0);
         $pdf->Cell(60, 6, htmlspecialchars($rowOut["sout_position"]), 1, 0);
         $pdf->Cell(40, 6, htmlspecialchars($rowOut["sout_length"]), 1, 1);
@@ -156,7 +222,7 @@ if ($resultOut->num_rows > 0) {
 }
 
 // Fill remaining rows with empty cells if there are fewer than 4 rows
-while ($rowCount < 4) {
+while ($rowCount < 3) {
     $pdf->Cell(70, 6, '', 1, 0);
     $pdf->Cell(60, 6, '', 1, 0);
     $pdf->Cell(40, 6, '', 1, 1);
@@ -165,47 +231,44 @@ while ($rowCount < 4) {
 
 $pdf->Ln(7);
 
-// First row: Add bordered columns for hobbies, arts, instruments, and sports with wrapped text
-$pdf->SetFont('Arial', '', 8);  // Reduced font size for the four columns
+// Set the maximum number of rows (this will depend on the largest dataset, so you can adjust it accordingly)
+$maxRows = max(count($sportsRows), count($instrumRows), count($artRows), count($hobbyRows));
+
+// First row headers
+$pdf->SetFont('Arial', '', 8);
 $pdf->FourColumnRow(42.5, 42.5, 42.5, 42.5, 'Sports you have played:', 'Musical instruments you have', 'Arts and crafts you have skill in:', 'Other hobbies/ interests:');
 
-// Second row: Remove top and bottom borders for this row
-$pdf->SetFont('Arial', '', 10); // Reset to default font size
-$pdf->FourColumnRow(42.5, 42.5, 42.5, 42.5, '', 'played:', '', '', 0); // No borders for the second row
-$pdf->FourColumnRow(42.5, 42.5, 42.5, 42.5, '', '', '', '', 0); // No borders for the second row
-$pdf->FourColumnRow(42.5, 42.5, 42.5, 42.5, '', '', '', '', 0); // No borders for the second row
-$pdf->Ln(0);
+// Loop through rows, ensuring each cell contains at most 3 values
+for ($i = 0; $i < $maxRows; $i++) {
+    // Ensure each column has valid data (or set to an empty string if data is missing)
+    $txt1 = isset($sportsRows[$i]) ? $sportsRows[$i] : '';
+    $txt2 = isset($instrumRows[$i]) ? $instrumRows[$i] : '';
+    $txt3 = isset($artRows[$i]) ? $artRows[$i] : '';
+    $txt4 = isset($hobbyRows[$i]) ? $hobbyRows[$i] : '';
 
-//sql for the tables
+    // Apply bottom border only on the last row
+    $borderType = ($i == $maxRows - 1) ? 1 : 0;
 
-// Add borders to close the bottom of the last row for these fields
-$pdf->Cell(42.5, 0, '', 'T', 0); // Hobbies
-$pdf->Cell(42.5, 0, '', 'T', 0); // Arts
-$pdf->Cell(42.5, 0, '', 'T', 0); // Instruments
-$pdf->Cell(42.5, 0, '', 'T', 1); // Sports
+    // Output the row
+    $pdf->FourColumnRow(42.5, 42.5, 42.5, 42.5, $txt1, $txt2, $txt3, $txt4, $borderType);
+}
+
 $pdf->Ln(7);
 
-// Activities of Interest
-$pdf->SetFont('Arial', '', 10);
-$pdf->Cell(0, 6, 'Activities that you are interested in learning about (could be a sport, art, music, skill, etc.):', 1, 1, 'L');
-
-// Create bordered rows dynamically
-$pdf->Cell(0, 1, '', 'LR', 1); // Top border for the section
+// Activities interested in
+$pdf->Cell(0, 6, 'Activities interested in learning:', 1, 1, 'L');
 for ($i = 0; $i < 3; $i++) {
-    $pdf->Cell(0, 6, '', 'LR', 1); // Left and right borders for empty rows
+    $pdf->Cell(0, 6, $interests[$i] ?? '', 'LR', 1);
 }
-$pdf->Cell(0, 0, '', 'T', 1); // Bottom border to close the block
+$pdf->Cell(0, 0, '', 'T', 1);
 $pdf->Ln(7);
 
-// Activities Spearheaded
-$pdf->Cell(0, 6, 'Activities that you have spearheaded (give a brief description of each activity):', 1, 1, 'L');
-
-// Create bordered rows dynamically
-$pdf->Cell(0, 1, '', 'LR', 1); // Top border for the section
+// Activities spearheaded
+$pdf->Cell(0, 6, 'Activities spearheaded:', 1, 1, 'L');
 for ($i = 0; $i < 3; $i++) {
-    $pdf->Cell(0, 6, '', 'LR', 1); // Left and right borders for empty rows
+    $pdf->Cell(0, 6, $spearhead[$i] ?? '', 'LR', 1);
 }
-$pdf->Cell(0, 0, '', 'T', 1); // Bottom border to close the block
+$pdf->Cell(0, 0, '', 'T', 1);
 
 $pdf->Ln(20);
 
