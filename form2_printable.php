@@ -1,12 +1,20 @@
-<?php
-require('subwrite.php');
-
-session_start();
+<?php 
 include 'connect.php';
-$id = $_SESSION['id'];
+require('subwrite.php');
+if (isset($_POST['u_id'])) {
+    $u_id = $_POST['u_id'];
+} else {
+    echo "Error: u_id not provided.";
+    exit();
+}
 
-function getActivityCount($conn, $id) {
-    $sqlCountActivities = "SELECT COUNT(a_id) as activity_count FROM activities_tbl WHERE u_id = '$id'";
+// Sanitize the u_id to prevent SQL injection
+$u_id = $conn->real_escape_string($u_id);
+
+
+// Now you can use $u_id in SQL queries
+function getActivityCount($conn, $u_id) {
+    $sqlCountActivities = "SELECT COUNT(a_id) as activity_count FROM activities_tbl WHERE u_id = '$u_id'";
     $resultCount = $conn->query($sqlCountActivities);
 
     if ($resultCount && $resultCount->num_rows > 0) {
@@ -16,31 +24,52 @@ function getActivityCount($conn, $id) {
     return 0;
 }
 
+
+
 // Count the number of activities the student already has
-$activityCount = getActivityCount($conn, $id);
+$activityCount = getActivityCount($conn, $u_id);
 
 // Fetch activities for the current user
-$sqlActivities = "SELECT * FROM activities_tbl WHERE u_id = '$id'";
+$sqlActivities = "SELECT * FROM activities_tbl WHERE u_id = '$u_id'";
 $resultActivities = $conn->query($sqlActivities);
 
 // Initialize variables for adviser name and submission date
 $adviserName = '';
 $subDate = '';
+$section = '';
 
-// Fetch adviser's name with u_level 2
-$sqlAdviser = "SELECT u_lname, u_fname, u_mname FROM users_tbl WHERE u_level = 2 LIMIT 1";
-$resultAdviser = $conn->query($sqlAdviser);
+$sqlSection = "SELECT ui_section FROM users_info_tbl WHERE u_id = '$u_id'";
+$resultSection = $conn->query($sqlSection);
 
-$studentName = htmlspecialchars($_SESSION['lname'] . ", " . $_SESSION['fname'] . " " . $_SESSION['mname']);
-$studentsName = strtoupper($studentName);
-if ($resultAdviser && $resultAdviser->num_rows > 0) {
+if ($resultSection->num_rows > 0) {
+    $rowSection = $resultSection->fetch_assoc();
+    $section = htmlspecialchars($rowSection['ui_section']);
+} else {
+    $section = ""; // Default empty value
+}
+
+$sqlAdviser = "
+    SELECT u.u_lname, u.u_fname, u.u_mname 
+    FROM users_tbl u
+    INNER JOIN users_info_tbl ui ON u.u_id = ui.u_id
+    WHERE u.u_level = 2 AND ui.ui_section = ?
+    LIMIT 1
+";
+
+$stmt = $conn->prepare($sqlAdviser);
+$stmt->bind_param("s", $section); // Bind the section variable
+$stmt->execute();
+$resultAdviser = $stmt->get_result();
+
+$adviserName = "No adviser found"; // Default value in case no result is found
+
+if ($resultAdviser->num_rows > 0) {
     $rowAdviser = $resultAdviser->fetch_assoc();
-    $adviserName = $rowAdviser['u_lname'] . ' ' . $rowAdviser['u_fname'] . ' ' . $rowAdviser['u_mname'];
-	$advisersName = strtoupper($adviserName);
+    $adviserName = htmlspecialchars($rowAdviser['u_lname'] . ', ' . $rowAdviser['u_fname'] . ' ' . $rowAdviser['u_mname']);
 }
 
 // Fetch submission date (assuming it's stored in activities_tbl for the user)
-$sqlSubmissionDate = "SELECT u_subdate FROM activities_tbl WHERE u_id = '$id' LIMIT 1";
+$sqlSubmissionDate = "SELECT u_subdate FROM activities_tbl WHERE u_id = '$u_id' LIMIT 1";
 $resultSubmissionDate = $conn->query($sqlSubmissionDate);
 
 if ($resultSubmissionDate && $resultSubmissionDate->num_rows > 0) {
@@ -48,10 +77,26 @@ if ($resultSubmissionDate && $resultSubmissionDate->num_rows > 0) {
     $subDate = $rowSubmissionDate['u_subdate'];
 }
 
+$sqlStudent = "SELECT u_lname, u_fname, u_mname FROM users_tbl WHERE u_id = '$u_id'";
+$resultStudent = $conn->query($sqlStudent);
+
+if ($resultStudent->num_rows > 0) {
+    $rowStudent = $resultStudent->fetch_assoc();
+    $studentName = htmlspecialchars($rowStudent['u_lname'] . ', ' . $rowStudent['u_fname'] . ' ' . $rowStudent['u_mname']);
+} else {
+    $studentName = "No student found";
+}
+
 // Suppress warnings by using proper error handling
-$remarks = "SELECT a_sa_remarks, a_status FROM activities_tbl WHERE u_id ='$id' LIMIT 1";
+$remarks = "SELECT a_sa_remarks, a_status FROM activities_tbl WHERE u_id ='$u_id' LIMIT 1";
 $resultRemarks = $conn->query($remarks);
 
+$sqlBatch = "SELECT ui_batch FROM users_info_tbl WHERE u_id = '$u_id'";
+$resultBatch = $conn->query($sqlBatch);
+if ($resultBatch && $resultBatch->num_rows > 0) {
+    $rowBatch = $resultBatch->fetch_assoc();
+    $batch = $rowBatch['ui_batch'];
+}
 
 
 /////END OF SQL
@@ -77,9 +122,9 @@ $pdf->Ln(5);
 
 // Student Information Section
 $pdf->SetFont('Arial', '', 10);
-$pdf->Cell(90, 10, 'Name of Student: ' . $studentsName, 0, 0);
-$pdf->Cell(50, 10, 'Batch: ', 0, 1);
-$pdf->Cell(90, 10, 'Name of Adviser: ' . $advisersName, 0, 1);
+$pdf->Cell(90, 10, 'Name of Student: ' . $studentName, 0, 0);
+$pdf->Cell(50, 10, 'Batch: '. $batch, 0, 1);
+$pdf->Cell(90, 10, 'Name of Adviser: ' . $adviserName, 0, 1);
 $pdf->Cell(90, 10, 'Date of Submission: ' . $subDate, 0, 1);
 $pdf->Ln(5);
 
